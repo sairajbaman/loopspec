@@ -1,0 +1,23 @@
+name: accessibility-wcag
+description: WCAG 2.1 AA compliance rules
+rules:
+  - category: design
+    rule: All text must have minimum 4.5:1 contrast ratio (3:1 for large text)
+  - category: design
+    rule: All interactive elements must have visible focus indicators
+  - category: design
+    rule: All images must have meaningful alt text (or alt="" for decorative)
+  - category: design
+    rule: Form inputs must have associated labels
+  - category: design
+    rule: Color must not be the only way to convey information
+  - category: design
+    rule: Page must be navigable by keyboard alone
+  - category: design
+    rule: Respect prefers-reduced-motion for animations
+  - category: design
+    rule: Touch targets must be at least 44x44 pixels
+  - category: design
+    rule: Use semantic HTML elements (nav, main, article, aside)
+  - category: design
+    rule: ARIA attributes must be valid and necessary (don't over-use)

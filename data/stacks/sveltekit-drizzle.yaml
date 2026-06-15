@@ -1,0 +1,42 @@
+name: sveltekit-drizzle
+framework: SvelteKit
+orm: Drizzle ORM
+auth: Lucia Auth v3
+ui_library: Tailwind CSS + Bits UI
+
+conventions:
+  - TypeScript strict
+  - Runes for state ($state, $derived)
+  - Form actions for mutations
+  - Load functions for data
+  - Drizzle schema as type source
+
+patterns:
+  auth: Lucia with Drizzle adapter
+  data_fetching: SvelteKit load functions
+  forms: SvelteKit form actions + superforms
+  state: Svelte runes ($state)
+
+file_structure: |
+  src/
+    routes/
+    lib/
+      server/
+        db/
+        auth.ts
+      components/
+    app.d.ts
+
+dependencies:
+  - "@sveltejs/kit"
+  - svelte
+  - drizzle-orm
+  - lucia
+  - tailwindcss
+
+anti_patterns:
+  - Never access database from client-side code
+  - Never use stores when runes suffice
+  - Never skip form validation on server side
+  - Never use +page.js when +page.server.ts is needed
+  - Never expose server-only imports to client

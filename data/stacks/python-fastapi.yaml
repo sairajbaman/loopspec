@@ -1,0 +1,48 @@
+name: python-fastapi
+framework: FastAPI
+orm: SQLAlchemy 2.0 + Alembic
+auth: JWT (python-jose) + OAuth2
+ui_library: none (API-only)
+
+conventions:
+  - Type hints on all functions
+  - Pydantic models for request/response validation
+  - Dependency injection via FastAPI Depends()
+  - Async handlers where possible
+  - tests/ mirror src/ structure
+
+patterns:
+  auth: OAuth2 password bearer + JWT tokens
+  data_fetching: SQLAlchemy async sessions
+  migrations: Alembic auto-generate
+  validation: Pydantic BaseModel
+
+file_structure: |
+  app/
+    main.py
+    config.py
+    models/
+    schemas/
+    routers/
+    services/
+    dependencies/
+  alembic/
+  tests/
+
+dependencies:
+  - fastapi
+  - uvicorn
+  - sqlalchemy[asyncio]
+  - alembic
+  - pydantic
+  - python-jose
+  - passlib[bcrypt]
+  - httpx (testing)
+  - pytest
+
+anti_patterns:
+  - Never use global database sessions
+  - Never skip Pydantic validation for inputs
+  - Never hardcode secrets (use pydantic-settings)
+  - Never use sync I/O in async handlers
+  - Never skip database migrations

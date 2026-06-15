@@ -1,0 +1,44 @@
+name: flutter-firebase
+framework: Flutter 3
+orm: Cloud Firestore
+auth: Firebase Auth
+ui_library: Material 3
+
+conventions:
+  - Riverpod for state management
+  - Freezed for immutable models
+  - GoRouter for navigation
+  - Repository pattern for data access
+
+patterns:
+  auth: Firebase Auth with StreamProvider
+  data_fetching: Firestore streams via Riverpod
+  state: Riverpod providers (AsyncNotifier)
+  navigation: GoRouter with guards
+
+file_structure: |
+  lib/
+    features/
+      [feature]/
+        presentation/
+        domain/
+        data/
+    core/
+    routing/
+    main.dart
+
+dependencies:
+  - flutter
+  - firebase_core
+  - firebase_auth
+  - cloud_firestore
+  - flutter_riverpod
+  - freezed
+  - go_router
+
+anti_patterns:
+  - Never use setState for complex state (use Riverpod)
+  - Never put business logic in widgets
+  - Never skip null safety
+  - Never hardcode strings (use l10n)
+  - Never block UI thread with heavy computation

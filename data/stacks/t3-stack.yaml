@@ -1,0 +1,50 @@
+name: t3-stack
+framework: Next.js 15 (App Router)
+orm: Prisma ORM
+auth: NextAuth.js (Auth.js v5)
+ui_library: Tailwind CSS
+
+conventions:
+  - TypeScript strict, no any
+  - tRPC for all API calls (end-to-end type safety)
+  - Prisma schema as single source of truth for types
+  - Server-first data fetching via tRPC callers
+  - Zod for runtime validation
+
+patterns:
+  auth: NextAuth with Prisma adapter
+  data_fetching: tRPC procedures (query/mutation)
+  api: tRPC router with input validation via Zod
+  middleware: NextAuth middleware for protected routes
+
+file_structure: |
+  src/
+    app/
+    server/
+      api/
+        routers/
+        trpc.ts
+        root.ts
+      auth.ts
+      db.ts
+    trpc/
+      react.tsx
+      server.ts
+
+dependencies:
+  - next@15
+  - "@trpc/server"
+  - "@trpc/client"
+  - "@trpc/react-query"
+  - prisma
+  - "@prisma/client"
+  - next-auth
+  - zod
+  - tailwindcss
+
+anti_patterns:
+  - Never bypass tRPC for API calls (use fetch only for external APIs)
+  - Never write raw SQL (use Prisma)
+  - Never skip input validation on tRPC procedures
+  - Never expose server-only code to client bundles
+  - Never use untyped env variables (use t3-env)

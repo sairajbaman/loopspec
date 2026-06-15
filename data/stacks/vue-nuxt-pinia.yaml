@@ -1,0 +1,41 @@
+name: vue-nuxt-pinia
+framework: Nuxt 3
+orm: Supabase
+auth: Supabase Auth (via @nuxtjs/supabase)
+ui_library: Nuxt UI
+
+conventions:
+  - TypeScript strict
+  - Composition API (setup script)
+  - Auto-imports enabled
+  - Pinia stores for global state
+  - Server routes for API
+
+patterns:
+  auth: "@nuxtjs/supabase module"
+  data_fetching: useFetch / useAsyncData composables
+  state: Pinia stores with setup syntax
+  forms: VeeValidate + Zod
+
+file_structure: |
+  pages/
+  components/
+  composables/
+  stores/
+  server/
+    api/
+  layouts/
+
+dependencies:
+  - nuxt
+  - "@pinia/nuxt"
+  - "@nuxtjs/supabase"
+  - "@nuxt/ui"
+  - zod
+
+anti_patterns:
+  - Never use Options API (use Composition API)
+  - Never mutate props directly
+  - Never skip SSR considerations for client-only code
+  - Never use $fetch in components (use useFetch)
+  - Never store auth tokens manually (use @nuxtjs/supabase)

@@ -1,0 +1,60 @@
+name: nextjs-supabase-shadcn
+framework: Next.js 15 (App Router)
+orm: Supabase (Postgres + PostgREST)
+auth: Supabase Auth (email/password + social)
+ui_library: shadcn/ui + Tailwind CSS 4
+
+conventions:
+  - TypeScript strict mode, no `any`
+  - Server Components by default, 'use client' only when needed
+  - File-based routing with app/ directory
+  - Named exports for components
+  - Colocate components with their routes
+  - Use Supabase RLS for all data access policies
+  - Environment variables prefixed with NEXT_PUBLIC_ for client-side
+
+patterns:
+  auth: Supabase createClient() with server/client separation
+  data_fetching: Server Components for reads, Server Actions for writes
+  file_upload: Supabase Storage with signed URLs
+  realtime: Supabase Realtime subscriptions
+  forms: react-hook-form + zod validation + shadcn Form component
+
+file_structure: |
+  app/
+    (auth)/
+      login/page.tsx
+      signup/page.tsx
+    (dashboard)/
+      layout.tsx
+      page.tsx
+    api/ (rarely needed with Server Actions)
+  components/
+    ui/ (shadcn generated)
+    [feature]/ (feature-specific)
+  lib/
+    supabase/
+      client.ts
+      server.ts
+      middleware.ts
+    utils.ts
+  types/
+
+dependencies:
+  - next@15
+  - react@19
+  - "@supabase/supabase-js"
+  - "@supabase/ssr"
+  - tailwindcss
+  - shadcn/ui components
+  - zod
+  - react-hook-form
+
+anti_patterns:
+  - Never use getServerSideProps (use Server Components)
+  - Never access Supabase client-side without RLS
+  - Never store secrets in NEXT_PUBLIC_ variables
+  - Never use useEffect for data fetching (use Server Components)
+  - Never skip loading/error states in async components
+  - Avoid client components for static content
+  - Never disable TypeScript strict mode

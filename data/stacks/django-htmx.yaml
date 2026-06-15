@@ -1,0 +1,48 @@
+name: django-htmx
+framework: Django 5
+orm: Django ORM
+auth: Django Auth + allauth
+ui_library: Tailwind CSS + HTMX
+
+conventions:
+  - Class-based views for CRUD, function views for custom logic
+  - Django templates with HTMX for interactivity
+  - django-environ for settings
+  - pytest-django for testing
+
+patterns:
+  auth: django-allauth (social + email)
+  data_fetching: Django ORM querysets
+  forms: Django ModelForm + crispy-forms
+  interactivity: HTMX (hx-get, hx-post, hx-swap)
+
+file_structure: |
+  project/
+    settings/
+      base.py
+      dev.py
+      prod.py
+  apps/
+    [app_name]/
+      models.py
+      views.py
+      urls.py
+      templates/
+      forms.py
+      tests/
+
+dependencies:
+  - django
+  - django-htmx
+  - django-allauth
+  - django-environ
+  - whitenoise
+  - gunicorn
+  - tailwindcss (via django-tailwind)
+
+anti_patterns:
+  - Never use raw SQL without Django's ORM parameterization
+  - Never disable CSRF protection
+  - Never put secrets in settings.py (use environ)
+  - Never use function views for standard CRUD
+  - Never skip database migrations before deployment

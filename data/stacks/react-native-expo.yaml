@@ -1,0 +1,39 @@
+name: react-native-expo
+framework: Expo (React Native)
+orm: Firebase Firestore
+auth: Firebase Auth
+ui_library: React Native Paper
+
+conventions:
+  - TypeScript strict
+  - Functional components with hooks
+  - Expo Router for navigation
+  - AsyncStorage for local persistence
+
+patterns:
+  auth: Firebase Auth with expo-auth-session
+  data_fetching: Firestore onSnapshot for realtime
+  navigation: Expo Router (file-based)
+  state: Zustand for global state
+
+file_structure: |
+  app/ (Expo Router)
+  components/
+  hooks/
+  lib/
+  constants/
+
+dependencies:
+  - expo
+  - react-native
+  - firebase
+  - expo-router
+  - zustand
+  - react-native-paper
+
+anti_patterns:
+  - Never use inline styles for reused components
+  - Never block the JS thread with heavy computation
+  - Never store sensitive data in AsyncStorage (use SecureStore)
+  - Never skip platform-specific testing (iOS + Android)
+  - Never use web-only APIs without Platform checks
