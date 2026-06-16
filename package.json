@@ -1,6 +1,6 @@
 {
   "name": "loopspec-mcp",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "The Compound Intelligence Engine for AI Development — MCP server that transforms ideas into living project specifications",
   "type": "module",
   "bin": {
