@@ -162,7 +162,9 @@ export async function storeMemory(ctx: AppContext, learnings: Learning[]) {
 
 export async function searchMemory(ctx: AppContext, topic: string, limit = 5): Promise<Learning[]> {
   const db = await ctx.getDb();
-  // Search with LIKE across pattern and category — weighted by confidence and usage
+  // Apply confidence decay before searching (patterns lose 5% confidence per week of inactivity)
+  db.prepare(`UPDATE memory SET confidence = MAX(confidence * 0.95, 0.1) WHERE project = ? AND updated_at < datetime('now', '-7 days')`).run(ctx.projectDir);
+
   const words = topic.split(/\s+/).filter((w) => w.length > 2);
   const conditions = words.map(() => 'pattern LIKE ?').join(' OR ');
   const params = words.map((w) => `%${w}%`);
@@ -176,6 +178,72 @@ export async function searchMemory(ctx: AppContext, topic: string, limit = 5): P
     : db.prepare(query).all(ctx.projectDir, limit) as Learning[];
 
   return rows;
+}
+
+// ─── Cross-Project Transfer ──────────────────────────────────────────────────
+
+export async function transferFromProject(ctx: AppContext, sourceProjectDir: string, minConfidence = 0.7): Promise<Learning[]> {
+  const db = await ctx.getDb();
+  // Find high-confidence patterns from source project that don't exist in current
+  const rows = db.prepare(`
+    SELECT s.pattern, s.category, s.confidence, s.source_task
+    FROM memory s
+    WHERE s.project = ? AND s.confidence >= ?
+    AND s.pattern NOT IN (SELECT pattern FROM memory WHERE project = ?)
+    ORDER BY s.confidence DESC LIMIT 20
+  `).all(sourceProjectDir, minConfidence, ctx.projectDir) as Learning[];
+
+  // Import with reduced confidence (70% of original — needs re-validation in this project)
+  if (rows.length > 0) {
+    const insertStmt = db.prepare('INSERT INTO memory (pattern, category, confidence, source_task, project) VALUES (?, ?, ?, ?, ?)');
+    for (const r of rows) {
+      insertStmt.run(r.pattern, r.category, r.confidence * 0.7, `[transferred] ${r.source_task}`, ctx.projectDir);
+    }
+  }
+
+  return rows;
+}
+
+// ─── Pattern Clustering ──────────────────────────────────────────────────────
+
+export interface PatternCluster {
+  category: string;
+  patterns: Learning[];
+  avgConfidence: number;
+  count: number;
+}
+
+export async function clusterPatterns(ctx: AppContext): Promise<PatternCluster[]> {
+  const db = await ctx.getDb();
+  const all = db.prepare('SELECT pattern, category, confidence, source_task FROM memory WHERE project = ? ORDER BY category, confidence DESC').all(ctx.projectDir) as Learning[];
+
+  const clusters: Record<string, Learning[]> = {};
+  for (const l of all) {
+    if (!clusters[l.category]) clusters[l.category] = [];
+    clusters[l.category].push(l);
+  }
+
+  return Object.entries(clusters).map(([category, patterns]) => ({
+    category,
+    patterns,
+    avgConfidence: patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length,
+    count: patterns.length,
+  })).sort((a, b) => b.avgConfidence - a.avgConfidence);
+}
+
+export async function getMemoryStats(ctx: AppContext): Promise<{ total: number; byCategory: Record<string, number>; avgConfidence: number; highConfidence: number }> {
+  const db = await ctx.getDb();
+  const total = (db.prepare('SELECT COUNT(*) as n FROM memory WHERE project = ?').get(ctx.projectDir) as { n: number }).n;
+  const rows = db.prepare('SELECT category, COUNT(*) as n FROM memory WHERE project = ? GROUP BY category').all(ctx.projectDir) as { category: string; n: number }[];
+  const avgRow = db.prepare('SELECT AVG(confidence) as avg FROM memory WHERE project = ?').get(ctx.projectDir) as { avg: number | null };
+  const highRow = db.prepare('SELECT COUNT(*) as n FROM memory WHERE project = ? AND confidence >= 0.7').get(ctx.projectDir) as { n: number };
+
+  return {
+    total,
+    byCategory: Object.fromEntries(rows.map(r => [r.category, r.n])),
+    avgConfidence: avgRow.avg ? Math.round(avgRow.avg * 100) / 100 : 0,
+    highConfidence: highRow.n,
+  };
 }
 
 export async function searchPlaybook(topic: string, limit = 5): Promise<Learning[]> {

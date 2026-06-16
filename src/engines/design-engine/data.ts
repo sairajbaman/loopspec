@@ -27,6 +27,37 @@ export interface UIStyle {
   antiPatterns: string[];
 }
 
+// ─── WCAG Contrast Validation ────────────────────────────────────────────────
+
+function hexToRgb(hex: string): [number, number, number] {
+  const h = hex.replace('#', '');
+  return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+}
+
+function relativeLuminance([r, g, b]: [number, number, number]): number {
+  const [rs, gs, bs] = [r, g, b].map(c => {
+    const s = c / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+}
+
+export function contrastRatio(hex1: string, hex2: string): number {
+  const l1 = relativeLuminance(hexToRgb(hex1));
+  const l2 = relativeLuminance(hexToRgb(hex2));
+  const lighter = Math.max(l1, l2);
+  const darker = Math.min(l1, l2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+export function validatePaletteContrast(p: Palette): { textOnBg: number; mutedOnBg: number; passesAA: boolean; passesAAA: boolean } {
+  const textOnBg = contrastRatio(p.text, p.bg);
+  const mutedOnBg = contrastRatio(p.muted, p.bg);
+  return { textOnBg, mutedOnBg, passesAA: textOnBg >= 4.5, passesAAA: textOnBg >= 7 };
+}
+
+// ─── 42 Palettes ─────────────────────────────────────────────────────────────
+
 export const PALETTES: Palette[] = [
   { name: 'Ocean Blue', industry: ['fintech', 'saas'], keywords: ['professional', 'trust', 'corporate'], primary: '#0066FF', secondary: '#1A1A2E', accent: '#00C9A7', bg: '#FAFBFC', text: '#0F172A', muted: '#64748B', border: '#E2E8F0' },
   { name: 'Midnight Finance', industry: ['fintech', 'crypto'], keywords: ['dark', 'premium', 'modern'], primary: '#6366F1', secondary: '#0F172A', accent: '#22D3EE', bg: '#020617', text: '#F1F5F9', muted: '#94A3B8', border: '#1E293B' },
@@ -59,7 +90,22 @@ export const PALETTES: Palette[] = [
   { name: 'Startup Fresh', industry: ['startup', 'saas'], keywords: ['fresh', 'startup', 'launch'], primary: '#2563EB', secondary: '#1E40AF', accent: '#10B981', bg: '#FFFFFF', text: '#111827', muted: '#6B7280', border: '#E5E7EB' },
   { name: 'Charity Soft', industry: ['nonprofit', 'charity'], keywords: ['soft', 'caring', 'community'], primary: '#0891B2', secondary: '#164E63', accent: '#F97316', bg: '#ECFEFF', text: '#1E293B', muted: '#64748B', border: '#A5F3FC' },
   { name: 'Crypto Dark', industry: ['crypto', 'web3'], keywords: ['crypto', 'web3', 'blockchain'], primary: '#F59E0B', secondary: '#0F172A', accent: '#8B5CF6', bg: '#020617', text: '#F1F5F9', muted: '#94A3B8', border: '#1E293B' },
+  // NEW palettes (32-42)
+  { name: 'AI Gradient', industry: ['ai', 'saas'], keywords: ['ai', 'machine-learning', 'intelligent', 'neural'], primary: '#7C3AED', secondary: '#2563EB', accent: '#06B6D4', bg: '#0B1120', text: '#F0F4F8', muted: '#8B9DC3', border: '#1E2D4A' },
+  { name: 'Zen Spa', industry: ['beauty', 'wellness'], keywords: ['spa', 'relaxation', 'zen', 'beauty'], primary: '#BE8C63', secondary: '#2C1810', accent: '#7C9A6C', bg: '#FDF8F4', text: '#2C1810', muted: '#8B7355', border: '#E8DDD4' },
+  { name: 'Developer Dark', industry: ['developer', 'tech'], keywords: ['developer', 'terminal', 'hacker', 'code'], primary: '#22C55E', secondary: '#0D1117', accent: '#F97316', bg: '#0D1117', text: '#C9D1D9', muted: '#8B949E', border: '#30363D' },
+  { name: 'Pastel Dream', industry: ['lifestyle', 'beauty'], keywords: ['pastel', 'dreamy', 'gentle', 'feminine'], primary: '#F0ABFC', secondary: '#A78BFA', accent: '#67E8F9', bg: '#FEFCE8', text: '#3F3F46', muted: '#71717A', border: '#FDE68A' },
+  { name: 'Maritime Blue', industry: ['logistics', 'travel'], keywords: ['marine', 'ocean', 'shipping', 'nautical'], primary: '#0369A1', secondary: '#0C4A6E', accent: '#F97316', bg: '#F0F9FF', text: '#0C4A6E', muted: '#64748B', border: '#BAE6FD' },
+  { name: 'Government', industry: ['government', 'civic'], keywords: ['government', 'civic', 'public', 'official'], primary: '#1E3A5F', secondary: '#0F172A', accent: '#B91C1C', bg: '#FFFFFF', text: '#111827', muted: '#4B5563', border: '#D1D5DB' },
+  { name: 'Terracotta Earth', industry: ['architecture', 'interior'], keywords: ['earthy', 'terracotta', 'interior', 'architecture'], primary: '#C2410C', secondary: '#431407', accent: '#059669', bg: '#FFFAF5', text: '#292524', muted: '#78716C', border: '#E7E5E4' },
+  { name: 'Electric Violet', industry: ['events', 'entertainment'], keywords: ['party', 'event', 'nightlife', 'electric'], primary: '#A21CAF', secondary: '#0F172A', accent: '#FBBF24', bg: '#0A0A0A', text: '#F5F5F5', muted: '#A3A3A3', border: '#262626' },
+  { name: 'Mint Fresh', industry: ['health', 'fintech'], keywords: ['mint', 'fresh', 'clean', 'crisp'], primary: '#0D9488', secondary: '#115E59', accent: '#6366F1', bg: '#F0FDFA', text: '#134E4A', muted: '#5F9EA0', border: '#99F6E4' },
+  { name: 'Slate Professional', industry: ['consulting', 'enterprise'], keywords: ['slate', 'professional', 'enterprise', 'b2b'], primary: '#475569', secondary: '#1E293B', accent: '#0EA5E9', bg: '#F8FAFC', text: '#0F172A', muted: '#64748B', border: '#CBD5E1' },
+  { name: 'Rose Gold', industry: ['beauty', 'jewelry'], keywords: ['rose-gold', 'feminine', 'luxury', 'jewelry'], primary: '#BE185D', secondary: '#500724', accent: '#D4A574', bg: '#FFF1F2', text: '#1C1917', muted: '#78716C', border: '#FECDD3' },
 ];
+
+
+// ─── 28 Font Pairings ────────────────────────────────────────────────────────
 
 export const FONT_PAIRINGS: FontPairing[] = [
   { name: 'Professional Clean', keywords: ['professional', 'clean', 'corporate', 'saas'], heading: 'Inter', body: 'Inter', mono: 'JetBrains Mono' },
@@ -83,7 +129,17 @@ export const FONT_PAIRINGS: FontPairing[] = [
   { name: 'Corporate Neutral', keywords: ['corporate', 'enterprise', 'neutral', 'business'], heading: 'Roboto', body: 'Roboto', mono: 'Roboto Mono' },
   { name: 'Modern Readable', keywords: ['readable', 'content', 'blog', 'article'], heading: 'Geist', body: 'Geist', mono: 'Geist Mono' },
   { name: 'Elegant Modern', keywords: ['elegant', 'modern', 'refined'], heading: 'DM Serif Display', body: 'DM Sans' },
+  // NEW fonts (22-28)
+  { name: 'Architectural', keywords: ['architecture', 'interior', 'space', 'structure'], heading: 'Archivo', body: 'Karla' },
+  { name: 'News Editorial', keywords: ['news', 'journalism', 'media', 'press'], heading: 'Fraunces', body: 'Commissioner' },
+  { name: 'Playful Kids', keywords: ['kids', 'playful', 'fun', 'colorful'], heading: 'Baloo 2', body: 'Quicksand' },
+  { name: 'Cinematic', keywords: ['cinema', 'film', 'dramatic', 'theater'], heading: 'Bebas Neue', body: 'Lato' },
+  { name: 'Calm Wellness', keywords: ['calm', 'meditation', 'yoga', 'mindful'], heading: 'Tenor Sans', body: 'Questrial' },
+  { name: 'Data Heavy', keywords: ['table', 'spreadsheet', 'numbers', 'finance'], heading: 'Albert Sans', body: 'Albert Sans', mono: 'Source Code Pro' },
+  { name: 'Japanese Minimal', keywords: ['japanese', 'zen', 'wabi-sabi', 'minimal'], heading: 'Zen Kaku Gothic New', body: 'Noto Sans JP' },
 ];
+
+// ─── 22 UI Styles ────────────────────────────────────────────────────────────
 
 export const UI_STYLES: UIStyle[] = [
   { name: 'Glassmorphism', keywords: ['glass', 'glassmorphism', 'frosted', 'blur'], description: 'Frosted glass with blur and transparency', cssProperties: { 'backdrop-filter': 'blur(16px)', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }, antiPatterns: ['Don\'t use low opacity on light backgrounds', 'Avoid too many stacked glass layers'] },
@@ -102,4 +158,11 @@ export const UI_STYLES: UIStyle[] = [
   { name: 'Line Art', keywords: ['line', 'outline', 'wireframe', 'thin'], description: 'Thin lines, outlined icons, minimal fill', cssProperties: { border: '1px solid currentColor', background: 'transparent', 'stroke-width': '1.5' }, antiPatterns: ['Don\'t use heavy fills', 'Don\'t use thick borders'] },
   { name: 'Aurora Glow', keywords: ['aurora', 'glow', 'neon', 'cyberpunk'], description: 'Glowing elements on dark background', cssProperties: { 'box-shadow': '0 0 20px rgba(139,92,246,0.5), 0 0 40px rgba(139,92,246,0.2)', background: '#0a0a0a' }, antiPatterns: ['Don\'t use on light backgrounds', 'Don\'t overuse glow effects'] },
   { name: 'Swiss Minimalism', keywords: ['swiss', 'typography', 'grid', 'helvetica'], description: 'Grid-based, type-driven, maximum clarity', cssProperties: { 'letter-spacing': '-0.02em', 'line-height': '1.5' }, antiPatterns: ['Don\'t use decorative elements', 'Don\'t use more than 2 font weights'] },
+  // NEW styles (17-22)
+  { name: 'Frosted Card', keywords: ['frosted', 'card', 'layered', 'depth'], description: 'Semi-transparent cards with depth layers', cssProperties: { background: 'rgba(255,255,255,0.7)', 'backdrop-filter': 'blur(10px)', 'border-radius': '12px', border: '1px solid rgba(0,0,0,0.05)', 'box-shadow': '0 4px 24px rgba(0,0,0,0.06)' }, antiPatterns: ['Don\'t use on busy backgrounds', 'Test contrast for text readability'] },
+  { name: 'Brutalist Type', keywords: ['brutalist', 'type', 'oversized', 'experimental'], description: 'Oversized type, asymmetric layout, intentional tension', cssProperties: { 'font-size': 'clamp(3rem, 8vw, 8rem)', 'font-weight': '900', 'letter-spacing': '-0.04em', 'line-height': '0.9' }, antiPatterns: ['Don\'t use for body text', 'Don\'t use more than one oversized element per view'] },
+  { name: 'Outlined Modern', keywords: ['outlined', 'border', 'modern', 'clean'], description: 'Outlined elements with no fill, modern and airy', cssProperties: { background: 'transparent', border: '2px solid currentColor', 'border-radius': '8px', color: 'inherit' }, antiPatterns: ['Don\'t mix with filled buttons', 'Needs sufficient border contrast'] },
+  { name: 'Grain Texture', keywords: ['grain', 'texture', 'vintage', 'film'], description: 'Subtle grain overlay for analog warmth', cssProperties: { 'background-image': 'url("data:image/svg+xml,...")', 'mix-blend-mode': 'overlay', opacity: '0.4' }, antiPatterns: ['Don\'t make grain too visible', 'Ensure text remains crisp over grain'] },
+  { name: 'Scroll Reveal', keywords: ['scroll', 'reveal', 'animation', 'cinematic'], description: 'Content reveals on scroll with staggered animations', cssProperties: { opacity: '0', transform: 'translateY(20px)', transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }, antiPatterns: ['Respect prefers-reduced-motion', 'Don\'t delay critical content'] },
+  { name: 'Micro Interaction', keywords: ['micro', 'interaction', 'feedback', 'tactile'], description: 'Rich micro-interactions on every touch point', cssProperties: { transition: 'transform 150ms ease, box-shadow 150ms ease', cursor: 'pointer' }, antiPatterns: ['Don\'t animate on load', 'Keep animations under 300ms'] },
 ];

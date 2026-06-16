@@ -214,3 +214,86 @@ function extractTargetUser(text: string): string {
   }
   return 'general users';
 }
+
+// ─── Code-Level Analysis (5/5 upgrade) ───────────────────────────────────────
+
+export interface CodeMetrics {
+  cyclomaticComplexity: number;
+  dependencyDepth: number;
+  importCount: number;
+  exportCount: number;
+  linesOfCode: number;
+  functionCount: number;
+  maxNesting: number;
+  risk: 'low' | 'medium' | 'high';
+}
+
+export function analyzeCodeComplexity(content: string): CodeMetrics {
+  const lines = content.split('\n');
+  const linesOfCode = lines.filter(l => l.trim() && !l.trim().startsWith('//')).length;
+
+  // Cyclomatic complexity: count decision points
+  let complexity = 1; // base path
+  const decisionPatterns = [
+    /\bif\s*\(/g, /\belse\s+if\s*\(/g, /\bwhile\s*\(/g, /\bfor\s*\(/g,
+    /\bcase\s+/g, /\bcatch\s*\(/g, /\?\?/g, /\?\./g, /&&/g, /\|\|/g,
+    /\?\s*[^:]+\s*:/g, // ternary
+  ];
+  for (const pat of decisionPatterns) {
+    complexity += (content.match(pat) || []).length;
+  }
+
+  // Dependency depth: count import levels
+  const imports = content.match(/^import\s+/gm) || [];
+  const importCount = imports.length;
+  const relativeImports = (content.match(/from\s+['"]\.\.?\//gm) || []).length;
+  const deepImports = (content.match(/from\s+['"]\.\.\/\.\.\/\.\.\//gm) || []).length;
+  const dependencyDepth = deepImports > 0 ? 3 : relativeImports > 3 ? 2 : 1;
+
+  // Export count
+  const exportCount = (content.match(/^export\s+/gm) || []).length;
+
+  // Function count
+  const functionCount = (content.match(/(?:function\s+\w+|(?:const|let)\s+\w+\s*=\s*(?:async\s*)?\(|(?:async\s+)?(?:get|set|delete|put|patch|post)\s*\()/gm) || []).length;
+
+  // Max nesting depth
+  let maxNesting = 0;
+  let currentNesting = 0;
+  for (const line of lines) {
+    currentNesting += (line.match(/\{/g) || []).length;
+    currentNesting -= (line.match(/\}/g) || []).length;
+    if (currentNesting > maxNesting) maxNesting = currentNesting;
+  }
+
+  // Risk assessment
+  let risk: CodeMetrics['risk'] = 'low';
+  if (complexity > 20 || maxNesting > 5 || linesOfCode > 300) risk = 'high';
+  else if (complexity > 10 || maxNesting > 4 || linesOfCode > 150) risk = 'medium';
+
+  return { cyclomaticComplexity: complexity, dependencyDepth, importCount, exportCount, linesOfCode, functionCount, maxNesting, risk };
+}
+
+export interface MultiFileAnalysis {
+  totalFiles: number;
+  totalLOC: number;
+  avgComplexity: number;
+  highRiskFiles: string[];
+  dependencyHotspots: string[];
+  suggestions: string[];
+}
+
+export function analyzeMultipleFiles(files: { path: string; content: string }[]): MultiFileAnalysis {
+  const metrics = files.map(f => ({ path: f.path, metrics: analyzeCodeComplexity(f.content) }));
+  const totalLOC = metrics.reduce((sum, m) => sum + m.metrics.linesOfCode, 0);
+  const avgComplexity = metrics.length > 0 ? Math.round(metrics.reduce((sum, m) => sum + m.metrics.cyclomaticComplexity, 0) / metrics.length) : 0;
+  const highRiskFiles = metrics.filter(m => m.metrics.risk === 'high').map(m => m.path);
+  const dependencyHotspots = metrics.filter(m => m.metrics.importCount > 10).map(m => m.path);
+
+  const suggestions: string[] = [];
+  if (highRiskFiles.length > 0) suggestions.push(`${highRiskFiles.length} high-risk files need refactoring (complexity > 20 or > 300 LOC)`);
+  if (dependencyHotspots.length > 0) suggestions.push(`${dependencyHotspots.length} files have 10+ imports — consider splitting`);
+  if (avgComplexity > 15) suggestions.push('Average complexity is high — break functions into smaller units');
+  if (totalLOC > 5000 && files.length < 10) suggestions.push('Large codebase in few files — improve modularization');
+
+  return { totalFiles: files.length, totalLOC, avgComplexity, highRiskFiles, dependencyHotspots, suggestions };
+}

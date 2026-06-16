@@ -230,7 +230,10 @@ export async function scoreTask(ctx: AppContext, task: string, files: string[]):
   const testCoverage = testResult.score;
 
   patternMatch = Math.max(0, Math.min(100, patternMatch));
-  const overall = Math.round((specCompliance + patternMatch + driftScore + testCoverage + accessibility + designMatch) / 6);
+  const overall = Math.round(
+    specCompliance * 0.25 + patternMatch * 0.10 + driftScore * 0.25 +
+    testCoverage * 0.15 + accessibility * 0.15 + designMatch * 0.10
+  );
 
   if (testCoverage < 60) suggestions.push('Add unit tests for changed files');
   if (driftScore < 80) suggestions.push('Fix drift — code deviates from spec');
@@ -275,6 +278,49 @@ export function formatScorecard(score: ScoreResult, task: string): string {
 export async function persistScore(ctx: AppContext, task: string, file: string | null, score: ScoreResult) {
   const db = await ctx.getDb();
   db.prepare(`INSERT INTO scores (task, file, spec_compliance, pattern_match, drift_score, test_coverage, accessibility, design_match, overall) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(task, file, score.specCompliance, score.patternMatch, score.driftScore, score.testCoverage, score.accessibility, score.designMatch, score.overall);
+}
+
+// ─── Configurable Thresholds ─────────────────────────────────────────────────
+
+export interface ScoreThresholds {
+  specCompliance: number;
+  patternMatch: number;
+  driftScore: number;
+  testCoverage: number;
+  accessibility: number;
+  designMatch: number;
+  overall: number;
+}
+
+export const DEFAULT_THRESHOLDS: ScoreThresholds = {
+  specCompliance: 70,
+  patternMatch: 75,
+  driftScore: 80,
+  testCoverage: 60,
+  accessibility: 80,
+  designMatch: 70,
+  overall: 70,
+};
+
+export function evaluateThresholds(score: ScoreResult, thresholds: ScoreThresholds = DEFAULT_THRESHOLDS): { passed: boolean; failures: string[] } {
+  const failures: string[] = [];
+  if (score.specCompliance < thresholds.specCompliance) failures.push(`specCompliance: ${score.specCompliance} < ${thresholds.specCompliance}`);
+  if (score.patternMatch < thresholds.patternMatch) failures.push(`patternMatch: ${score.patternMatch} < ${thresholds.patternMatch}`);
+  if (score.driftScore < thresholds.driftScore) failures.push(`driftScore: ${score.driftScore} < ${thresholds.driftScore}`);
+  if (score.testCoverage < thresholds.testCoverage) failures.push(`testCoverage: ${score.testCoverage} < ${thresholds.testCoverage}`);
+  if (score.accessibility < thresholds.accessibility) failures.push(`accessibility: ${score.accessibility} < ${thresholds.accessibility}`);
+  if (score.designMatch < thresholds.designMatch) failures.push(`designMatch: ${score.designMatch} < ${thresholds.designMatch}`);
+  if (score.overall < thresholds.overall) failures.push(`overall: ${score.overall} < ${thresholds.overall}`);
+  return { passed: failures.length === 0, failures };
+}
+
+// ─── Baseline Comparison ─────────────────────────────────────────────────────
+
+export async function getProjectBaseline(ctx: AppContext): Promise<{ avg: number; count: number; best: number; worst: number } | null> {
+  const db = await ctx.getDb();
+  const row = db.prepare('SELECT AVG(overall) as avg, COUNT(*) as count, MAX(overall) as best, MIN(overall) as worst FROM scores').get() as { avg: number | null; count: number; best: number | null; worst: number | null } | undefined;
+  if (!row || row.count === 0) return null;
+  return { avg: Math.round(row.avg!), count: row.count, best: row.best!, worst: row.worst! };
 }
 
 export async function getScoreTrends(ctx: AppContext, limit = 10): Promise<string> {

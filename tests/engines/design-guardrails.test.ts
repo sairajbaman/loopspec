@@ -3,16 +3,16 @@ import { PALETTES, FONT_PAIRINGS, UI_STYLES } from '../../src/engines/design-eng
 import { getAvailablePacks, getGuardrailPack } from '../../src/engines/guardrails/index.js';
 
 describe('Design Engine Data', () => {
-  it('has 31 palettes', () => {
-    expect(PALETTES.length).toBe(31);
+  it('has 42 palettes', () => {
+    expect(PALETTES.length).toBe(42);
   });
 
-  it('has 21 font pairings', () => {
-    expect(FONT_PAIRINGS.length).toBe(21);
+  it('has 28 font pairings', () => {
+    expect(FONT_PAIRINGS.length).toBe(28);
   });
 
-  it('has 16 UI styles', () => {
-    expect(UI_STYLES.length).toBe(16);
+  it('has 22 UI styles', () => {
+    expect(UI_STYLES.length).toBe(22);
   });
 
   it('all palettes have required fields', () => {
@@ -40,8 +40,8 @@ describe('Design Engine Data', () => {
 });
 
 describe('Guardrail Packs', () => {
-  it('lists 4 available packs', () => {
-    expect(getAvailablePacks().length).toBe(4);
+  it('lists 6 available packs', () => {
+    expect(getAvailablePacks().length).toBe(6);
   });
 
   it('loads security-owasp pack', () => {
