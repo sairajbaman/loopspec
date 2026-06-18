@@ -216,6 +216,32 @@ export async function main() {
       await runPredictCommand(parsed.positional, parsed.flags);
       break;
     }
+    case 'test': {
+      const { runTestCommand } = await import('./commands/test.js');
+      await runTestCommand(parsed.flags);
+      break;
+    }
+    case 'spec': {
+      const { buildStructuredSpec } = await import('../engines/structured-spec/index.js');
+      const ctx = (await import('../context.js')).createContext();
+      console.log('Building structured spec...');
+      const spec = await buildStructuredSpec(ctx);
+      console.log(`✓ Generated: .loopspec/structured/spec.json (${spec.schema.tables.length} tables, ${spec.routes.length} routes)`);
+      console.log(`✓ Generated: .loopspec/structured/types.ts (${spec.types.length} types)`);
+      break;
+    }
+    case 'export': {
+      const { exportFineTuningData } = await import('../engines/finetune/index.js');
+      const ctx = (await import('../context.js')).createContext();
+      const outPath = parsed.positional[0] || undefined;
+      console.log('Exporting fine-tuning dataset...');
+      const result = await exportFineTuningData(ctx, outPath);
+      console.log(`✓ Exported ${result.totalExamples} training examples → ${result.outputPath}`);
+      for (const [cat, count] of Object.entries(result.breakdown)) {
+        console.log(`  ${cat}: ${count}`);
+      }
+      break;
+    }
     case 'worktree': {
       const { runWorktreeCommand } = await import('./commands/worktree.js');
       await runWorktreeCommand(parsed.positional, parsed.flags);

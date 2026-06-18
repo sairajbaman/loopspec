@@ -1,0 +1,142 @@
+name: LoopSpec Quality Gate
+
+on:
+  pull_request:
+    branches: [main, master, develop]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  loopspec-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install LoopSpec
+        run: npm install -g loopspec-mcp
+
+      - name: Get changed files
+        id: changed
+        run: |
+          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '\.(ts|tsx|js|jsx)$' | head -20)
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Run LoopSpec check
+        id: check
+        run: |
+          RESULTS=""
+          TOTAL_SCORE=0
+          FILE_COUNT=0
+          PASS=true
+
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            [ ! -f "$file" ] && continue
+            FILE_COUNT=$((FILE_COUNT + 1))
+
+            OUTPUT=$(npx loopspec-mcp check "$file" --json 2>/dev/null || echo '{"score":0,"pass":false}')
+            SCORE=$(echo "$OUTPUT" | jq -r '.score // 0')
+            FILE_PASS=$(echo "$OUTPUT" | jq -r '.pass // false')
+            ISSUES=$(echo "$OUTPUT" | jq -r '.ast.issues | length // 0')
+            DRIFTS=$(echo "$OUTPUT" | jq -r '.drifts | length // 0')
+
+            TOTAL_SCORE=$((TOTAL_SCORE + SCORE))
+            if [ "$FILE_PASS" = "false" ]; then PASS=false; fi
+
+            ICON="✅"
+            [ "$SCORE" -lt 70 ] && ICON="❌"
+            [ "$SCORE" -ge 70 ] && [ "$SCORE" -lt 80 ] && ICON="⚠️"
+            RESULTS="${RESULTS}| ${ICON} | \`${file}\` | ${SCORE}/100 | ${ISSUES} | ${DRIFTS} |\n"
+          done <<< "${{ steps.changed.outputs.files }}"
+
+          if [ "$FILE_COUNT" -gt 0 ]; then
+            AVG=$((TOTAL_SCORE / FILE_COUNT))
+          else
+            AVG=0
+          fi
+
+          echo "avg_score=$AVG" >> $GITHUB_OUTPUT
+          echo "file_count=$FILE_COUNT" >> $GITHUB_OUTPUT
+          echo "pass=$PASS" >> $GITHUB_OUTPUT
+          {
+            echo "results<<EOF"
+            echo -e "$RESULTS"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+      - name: Comment on PR
+        if: steps.check.outputs.file_count != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const avg = '${{ steps.check.outputs.avg_score }}';
+            const count = '${{ steps.check.outputs.file_count }}';
+            const pass = '${{ steps.check.outputs.pass }}';
+            const results = `${{ steps.check.outputs.results }}`;
+
+            const icon = pass === 'true' ? '✅' : '❌';
+            const body = `## ${icon} LoopSpec Quality Gate
+
+            **Average Score: ${avg}/100** | Files Reviewed: ${count} | Status: ${pass === 'true' ? 'PASSED' : 'NEEDS WORK'}
+
+            | Status | File | Score | AST Issues | Drift |
+            |--------|------|-------|-----------|-------|
+            ${results}
+
+            <details>
+            <summary>How to fix</summary>
+
+            Run locally:
+            \`\`\`bash
+            npx loopspec-mcp check <file> --verbose
+            \`\`\`
+
+            </details>
+
+            ---
+            *Powered by [LoopSpec](https://github.com/sairajbaman/loopspec)*`;
+
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.includes('LoopSpec Quality Gate'));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Fail if below threshold
+        if: steps.check.outputs.pass == 'false'
+        run: |
+          echo "❌ LoopSpec quality gate failed. Average score: ${{ steps.check.outputs.avg_score }}/100"
+          exit 1
