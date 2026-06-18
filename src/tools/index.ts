@@ -45,6 +45,7 @@ import {
   registerPluginTool,
   registerSandboxTool,
 } from './neural-tools.js';
+import { registerPredictTool } from './predict-tool.js';
 
 export function registerAllTools(server: McpServer, ctx: AppContext) {
   // Core spec tools
@@ -133,4 +134,7 @@ export function registerAllTools(server: McpServer, ctx: AppContext) {
 
   // Live Sandbox
   registerSandboxTool(server, ctx);
+
+  // Inverse Reasoning / Predictions
+  registerPredictTool(server, ctx);
 }

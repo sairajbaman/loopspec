@@ -74,7 +74,7 @@ async function startMcpServer() {
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error('LoopSpec MCP server v2.0.0 running (41 tools, 12 resources, 4 prompts)');
+  console.error('LoopSpec MCP server v2.0.0 running (42 tools, 12 resources, 4 prompts)');
 
   process.on('SIGINT', async () => {
     await server.close();
