@@ -1,0 +1,27 @@
+{
+  "$schema": "https://smithery.ai/schema/server.json",
+  "name": "loopspec",
+  "description": "The Compound Intelligence Engine for AI Development — persistent memory, structured context, quality feedback loops, drift detection, goal tracking, and smart guardrails for any AI coding tool",
+  "vendor": "loopspec",
+  "homepage": "https://github.com/sairajbaman/loopspec",
+  "repository": "https://github.com/sairajbaman/loopspec",
+  "license": "MIT",
+  "runtime": "node",
+  "command": {
+    "npx": {
+      "command": "npx",
+      "args": ["-y", "loopspec-mcp"]
+    },
+    "npx-windows": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "loopspec-mcp"]
+    }
+  },
+  "categories": ["development", "code-quality", "documentation", "testing"],
+  "tags": ["specification", "drift-detection", "guardrails", "sessions", "goals", "compound-intelligence", "graph-of-thought"],
+  "features": {
+    "tools": 40,
+    "resources": 12,
+    "prompts": 4
+  }
+}

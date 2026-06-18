@@ -28,6 +28,24 @@ import {
 import { registerWatchTool } from './watch.js';
 import { registerTemplateCustomizeTool } from './template.js';
 
+// v2.0 new tools
+import { registerSessionTool } from './session-tool.js';
+import { registerGoalTool } from './goal-tool.js';
+import { registerDecisionTool, registerCheckpointTool } from './decision-tool.js';
+import { registerGuidanceTool } from './guidance-tool.js';
+import { registerStatusTool } from './status-tool.js';
+
+// v2.0 neural tools
+import {
+  registerGraphTool,
+  registerProfilerTool,
+  registerAutocompleteTool,
+  registerSelfHealTool,
+  registerContractsTool,
+  registerPluginTool,
+  registerSandboxTool,
+} from './neural-tools.js';
+
 export function registerAllTools(server: McpServer, ctx: AppContext) {
   // Core spec tools
   registerInitTool(server, ctx);
@@ -76,4 +94,43 @@ export function registerAllTools(server: McpServer, ctx: AppContext) {
 
   // Template customization
   registerTemplateCustomizeTool(server, ctx);
+
+  // === v2.0 NEW TOOLS ===
+  // Status (orientation — call first)
+  registerStatusTool(server, ctx);
+
+  // Session tracking
+  registerSessionTool(server, ctx);
+
+  // Goal tracking
+  registerGoalTool(server, ctx);
+
+  // Decision log + Checkpoint
+  registerDecisionTool(server, ctx);
+  registerCheckpointTool(server, ctx);
+
+  // Smart guidance
+  registerGuidanceTool(server, ctx);
+
+  // === v2.0 NEURAL TOOLS ===
+  // Graph-of-Thought
+  registerGraphTool(server, ctx);
+
+  // Model Profiler
+  registerProfilerTool(server, ctx);
+
+  // Spec Autocomplete
+  registerAutocompleteTool(server, ctx);
+
+  // Self-Healing Specs
+  registerSelfHealTool(server, ctx);
+
+  // API Contracts
+  registerContractsTool(server, ctx);
+
+  // Plugin System
+  registerPluginTool(server, ctx);
+
+  // Live Sandbox
+  registerSandboxTool(server, ctx);
 }

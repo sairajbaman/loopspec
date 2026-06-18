@@ -1,0 +1,10 @@
+{
+  "name": "loopspec",
+  "description": "Compound Intelligence Engine — specs, drift detection, sessions, goals, guardrails for AI coding",
+  "mcpServers": {
+    "loopspec": {
+      "command": "npx",
+      "args": ["-y", "loopspec-mcp"]
+    }
+  }
+}
