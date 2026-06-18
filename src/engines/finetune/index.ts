@@ -81,7 +81,12 @@ async function extractDriftExamples(ctx: AppContext): Promise<TrainingExample[]>
         });
       }
     }
-  } catch {}
+  } catch (e) {
+    // DB table may not exist yet — expected on first run
+    if (!(e as Error).message?.includes('no such table')) {
+      console.error('[finetune] drift extraction error:', (e as Error).message);
+    }
+  }
 
   return examples;
 }
@@ -104,7 +109,11 @@ async function extractMemoryExamples(ctx: AppContext): Promise<TrainingExample[]
         metadata: { source: 'learnings', category: 'pattern-recall', quality: row.confidence },
       });
     }
-  } catch {}
+  } catch (e) {
+    if (!(e as Error).message?.includes('no such table')) {
+      console.error('[finetune] memory extraction error:', (e as Error).message);
+    }
+  }
 
   return examples;
 }
@@ -163,7 +172,11 @@ async function extractSessionExamples(ctx: AppContext): Promise<TrainingExample[
         });
       }
     }
-  } catch {}
+  } catch (e) {
+    if (!(e as Error).message?.includes('no such table')) {
+      console.error('[finetune] session extraction error:', (e as Error).message);
+    }
+  }
 
   return examples;
 }

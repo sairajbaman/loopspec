@@ -97,11 +97,11 @@ function parseSchema(content: string): SchemaDefinition {
     const fieldLines = section.content.match(/^[-*]\s+(\w+)[:\s]+(.+)$/gm) || [];
     if (fields.length === 0) {
       for (const line of fieldLines) {
-        const m = line.match(/^[-*]\s+(\w+)[:\s]+(\w+)(.*)$/);
+        const m = line.match(/^[-*]\s+(\w+)[:\s]+([\w<>,\s[\]|]+?)(\s*\(.*)?$/);
         if (m) {
           fields.push({
             name: m[1],
-            type: mapType(m[2]),
+            type: mapType(m[2].trim()),
             required: !m[3]?.toLowerCase().includes('optional'),
           });
         }
