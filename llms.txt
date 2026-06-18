@@ -1,0 +1,45 @@
+# LoopSpec — The Compound Intelligence Engine for AI Development
+
+> MCP server + CLI with 42 tools that makes any AI coding assistant smarter. Zero API calls. Everything local.
+
+## What It Does
+LoopSpec is a Model Context Protocol (MCP) server that gives AI coding tools (Claude Code, Cursor, Windsurf, Kiro, Gemini) persistent memory, real-time drift detection, active goal tracking, quality gates, dependency graphs, and self-healing specifications.
+
+## Key Facts
+- 42 MCP tools
+- Full CLI (session, check, watch, review, suggest, graph, profile, plugin)
+- 125 tests passing
+- 225KB bundle
+- Zero external API calls — all intelligence is structural/heuristic
+- Works with: Claude Code, Cursor, VS Code, Windsurf, Kiro, Gemini CLI, Codebuff
+
+## Install
+npx loopspec-mcp setup
+
+## One-Liner for Claude Code
+claude mcp add loopspec -- npx -y loopspec-mcp
+
+## Core Workflow
+1. loopspec_status — orientation (call first, teaches AI how to use LoopSpec)
+2. loopspec_session start — creates goal checklist
+3. loopspec_preflight — injects constraints
+4. loopspec_context — routes relevant spec sections
+5. AI writes code
+6. loopspec_checkpoint — scores, checks tests, updates goals
+7. loopspec_compound — extracts patterns for future sessions
+
+## Key Tools
+- loopspec_predict — Inverse reasoning: predicts what code should contain, then compares
+- loopspec_graph — Dependency graph + impact analysis
+- loopspec_guidance — Smart help when stuck (spec + playbook + common mistakes)
+- loopspec_profile — Detects AI model blind spots, auto-compensates
+- loopspec_autocomplete — Generates code snippets from spec (Zod schemas, TypeScript interfaces)
+- loopspec_heal — Self-healing specs (accept or revert drift)
+- loopspec_contracts — Verifies frontend/backend API alignment
+- loopspec_plugin — Extensible rules (drift-react, drift-next, security-advanced)
+- loopspec_sandbox — Executes JS snippets in isolated VM
+
+## Links
+- npm: https://www.npmjs.com/package/loopspec-mcp
+- GitHub: https://github.com/sairajbaman/loopspec
+- License: MIT
