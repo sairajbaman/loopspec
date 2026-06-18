@@ -43,7 +43,7 @@ export function parseArgs(argv: string[]): ParsedArgs {
 }
 
 const HELP = `
-loopspec v2.0.0 — The Compound Intelligence Engine for AI Development
+loopspec v2.1.0 — The Compound Intelligence Engine for AI Development
 
 Usage:
   loopspec <command> [options]
@@ -59,25 +59,33 @@ Commands:
   watch [--continuous]   Watch files for drift (--tui for dashboard)
   review [--pr <base>]   Review changed files against spec
   suggest "<task>"       Get implementation guidance
+  preflight "<task>"     Get guardrails and constraints before coding
+  predict "<task>"       Predict expected patterns before writing code
+  predict compare        Compare written code against predictions
 
-  graph build            Build dependency graph from source
+  graph build            Build dependency graph from source (--all for tests)
   graph impact <file>    Show what depends on a file
   graph query "<name>"   Search graph for nodes
 
+  compound "<task>"      Extract learnings from completed work
   profile                Show model blind-spot profile
   plugin install <name>  Install a plugin (drift-react, drift-next, etc.)
   plugin list            List installed/available plugins
+  worktree list|create|remove  Manage git worktrees
 
   connect [--status]     Configure AI tools (or show status)
-  start                  Alias for connect --all
-  stop                   Remove LoopSpec from all tools
+  start [--yes]          Configure all detected tools (--yes for CI)
+  stop [--yes]           Remove LoopSpec from all tools (--yes for CI)
 
   help                   Show this help
 
 Options:
+  --json                 Output as JSON (for check command, CI integration)
   --tui                  Use TUI dashboard (for watch)
+  --all                  Include tests/scripts in graph
   --global               Use global session store
   --continuous           Keep watching (don't exit)
+  --yes, -y              Skip interactive prompts (CI mode)
   -h, --help             Show help for a command
   --version              Show version
 
@@ -150,7 +158,7 @@ export async function main() {
   }
 
   if (parsed.flags.version) {
-    console.log('loopspec v2.0.2');
+    console.log('loopspec v2.1.0');
     return;
   }
 
@@ -162,7 +170,7 @@ export async function main() {
       break;
     case '--version':
     case '-V':
-      console.log('loopspec v2.0.2');
+      console.log('loopspec v2.1.0');
       break;
     case 'session':
       await runSession(parsed);

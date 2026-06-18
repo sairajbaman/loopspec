@@ -94,7 +94,7 @@ async function main() {
   }
 
   if (args.includes('--version') || args.includes('-v')) {
-    console.log('loopspec-mcp v2.0.2');
+    console.log('loopspec-mcp v2.1.0');
     process.exit(0);
   }
 
