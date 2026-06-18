@@ -3,9 +3,9 @@ import { createWatcher } from '../../engines/watcher/index.js';
 import { log, severity, renderTui } from '../output.js';
 
 export async function runWatchCommand(flags: Record<string, string | boolean>) {
-  const ctx = createContext();
+  const ctx = createContext(process.cwd());
   const useTui = !!flags.tui;
-  const continuous = flags.continuous !== false; // default true for watch
+  const continuous = !!flags.continuous; // Only continuous if explicitly passed
 
   log(`${severity('info')} LoopSpec Watch — monitoring for drift and violations\n`);
 

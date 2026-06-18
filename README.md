@@ -367,15 +367,16 @@ Once persisted, the behavior survives across all future sessions.
 
 | Tool | Config File | Status |
 |---|---|---|
-| **Claude Code** | CLAUDE.md | ✅ Auto-detected |
+| **Claude Code** | .mcp.json | ✅ Auto-detected |
 | **Cursor** | .cursor/mcp.json | ✅ Auto-detected |
-| **Windsurf** | .codeium/windsurf.json | ✅ Auto-detected |
-| **Gemini CLI** | gemini-extension.json | ✅ Auto-detected |
+| **Windsurf** | .codeium/windsurf/mcp_config.json | ✅ Auto-detected |
+| **Gemini CLI** | gemini-extension.json | ✅ Manual (PATH) |
 | **Kiro** | .kiro/settings/mcp.json | ✅ Auto-detected |
-| **Codebuff** | - | ✅ Auto-detected |
+| **Amazon Q** | ~/.aws/amazonq/mcp.json | ✅ Auto-detected |
 | **VS Code** | .vscode/mcp.json | ✅ Auto-detected |
-| **Cline** | cline_mcp_settings.json | ✅ Manual setup |
-| **Continue** | continue.json | ✅ Manual setup |
+| **Codebuff** | codebuff_config.json | ✅ Auto-detected |
+| **Cline** | cline_mcp_settings.json | ✅ Auto-detected |
+| **Continue** | .continue/config.json | ✅ Auto-detected |
 
 ---
 
@@ -485,6 +486,12 @@ Just say "use loopspec" in your AI tool. Or call `loopspec_status` — it teache
 
 **Q: Does it work on Windows?**
 Yes. Auto-detects Windows and writes `cmd /c npx` config. Zero manual fixup needed.
+
+> **PowerShell note:** Windows PowerShell 5.1 does not support `&&`. Use `;` to chain commands:
+> ```powershell
+> cd "my-project" ; npx loopspec-mcp status
+> ```
+> Or use PowerShell 7+ (`pwsh`) which supports `&&`.
 
 **Q: Can I use it with existing projects?**
 Yes. Use `loopspec_detect` to auto-generate SKILL.md from your existing codebase.

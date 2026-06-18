@@ -1,38 +1,75 @@
 import type { ProjectAnalysis } from '../analyzer.js';
 
 export function generateSkillPrompt(analysis: ProjectAnalysis, answers: Record<string, string>, stackDna?: string): string {
-  const stackContext = stackDna ? `\n## Stack Conventions (from DNA preset)\n${stackDna}\n` : '';
-  return `Generate a SKILL.md — the AI agent memory file for this project.
+  const stack = answers.stack || analysis.impliedStack || 'nextjs-supabase-shadcn';
+  const stackParts = stack.split('-');
 
-## Context
-- Stack: ${answers.stack || analysis.impliedStack || 'nextjs-supabase-shadcn'}
-- Industry: ${analysis.industry}
-${stackContext}
-## Sections Required
-### Project Overview
-One paragraph summary.
+  const framework = stackParts[0] || 'Next.js';
+  const db = stackParts[1] || 'PostgreSQL';
+  const ui = stackParts[2] || 'Tailwind CSS';
 
-### Tech Stack
-Exact framework, DB, ORM, auth, UI lib.
+  return `# SKILL.md — Project Conventions
 
-### Coding Conventions
-- Strictness, naming, imports, component patterns
+## Project Overview
+${analysis.productType} for ${analysis.targetUser} in the ${analysis.industry} industry. Complexity: ${analysis.complexity}.
 
-### Commands
-- install, dev, build, test, lint, deploy
+## Tech Stack
+- **Framework:** ${framework}
+- **Database:** ${db}
+- **UI:** ${ui}
+- **Language:** TypeScript (strict mode)
+- **Validation:** Zod
+- **Testing:** Vitest
 
-### Architecture Decisions
-Key choices with one-line rationale.
+## Coding Conventions
+- **Strictness:** TypeScript strict mode, no \`any\` types
+- **Naming:** camelCase for variables/functions, PascalCase for components/types
+- **Imports:** Named exports only, no default exports
+- **Components:** Function components with explicit return types
+- **Files:** kebab-case filenames, collocate tests with source
 
-### File Structure
-Where code types live.
+## Commands
+\`\`\`bash
+npm install          # Install dependencies
+npm run dev          # Start dev server
+npm run build        # Production build
+npm test             # Run tests
+npm run lint         # Lint code
+\`\`\`
 
-### Common Patterns
-How to add page, endpoint, table.
+## Architecture Decisions
+- Server-first data fetching (RSC where available)
+- Collocate related code (component + test + types in same dir)
+- Thin API routes (validate → delegate → respond)
+- Zod schemas shared between client and server
 
-### Anti-Patterns (at least 5)
-Things to NEVER do.
+## File Structure
+\`\`\`
+src/
+├── app/              # Routes and pages
+├── components/       # Shared UI components
+├── lib/              # Business logic and utilities
+├── hooks/            # Custom React hooks
+├── types/            # Shared TypeScript types
+└── __tests__/        # Integration tests
+\`\`\`
 
-### Lessons Learned
-(empty — auto-populated by compound engine)`;
+## Common Patterns
+- **Add a page:** Create \`src/app/<route>/page.tsx\` with loading.tsx and error.tsx
+- **Add an API route:** Create \`src/app/api/<name>/route.ts\` with Zod validation
+- **Add a component:** Create \`src/components/<Name>.tsx\` with named export
+- **Add a type:** Export from \`src/types/<domain>.ts\`
+
+## Anti-Patterns
+1. **Never** use \`any\` — use \`unknown\` with type narrowing instead
+2. **Never** skip error handling in async functions
+3. **Never** put business logic in UI components — extract to \`lib/\`
+4. **Never** use \`export default\` — always use named exports
+5. **Never** hardcode secrets — use environment variables
+6. **Never** skip input validation on API routes
+7. **Never** commit \`.env\` files — use \`.env.example\` templates
+
+## Lessons Learned
+_(Auto-populated by compound engine during sessions)_
+${stackDna ? `\n## Stack DNA\n${stackDna}` : ''}`;
 }

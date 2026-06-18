@@ -49,6 +49,7 @@ Usage:
   loopspec <command> [options]
 
 Commands:
+  status                 Show current session state (alias for session status)
   session start <name>   Start a tracked session
   session status         Show current session state
   session end            End session with report
@@ -78,6 +79,11 @@ Options:
   --global               Use global session store
   --continuous           Keep watching (don't exit)
   -h, --help             Show help for a command
+  --version              Show version
+
+Note (Windows PowerShell 5.1):
+  Use semicolons (;) to chain commands, not &&.
+  Example: cd "my-project" ; npx loopspec-mcp status
 `;
 
 async function runCheck(args: ParsedArgs) {
@@ -143,11 +149,20 @@ export async function main() {
     return;
   }
 
+  if (parsed.flags.version) {
+    console.log('loopspec v2.0.2');
+    return;
+  }
+
   switch (parsed.command) {
     case 'help':
     case '--help':
     case '-h':
       console.log(HELP);
+      break;
+    case '--version':
+    case '-V':
+      console.log('loopspec v2.0.2');
       break;
     case 'session':
       await runSession(parsed);
@@ -176,13 +191,41 @@ export async function main() {
     case 'plugin':
       await runPlugin(parsed);
       break;
+    case 'compound': {
+      const { runCompoundCommand } = await import('./commands/compound.js');
+      await runCompoundCommand(parsed.positional, parsed.flags);
+      break;
+    }
+    case 'preflight': {
+      const task = parsed.positional.join(' ');
+      if (!task) { console.log('Usage: loopspec preflight "<task description>"'); break; }
+      const { runPreflightCommand } = await import('./commands/preflight.js');
+      await runPreflightCommand(task, parsed.flags);
+      break;
+    }
+    case 'predict': {
+      const { runPredictCommand } = await import('./commands/predict.js');
+      await runPredictCommand(parsed.positional, parsed.flags);
+      break;
+    }
+    case 'worktree': {
+      const { runWorktreeCommand } = await import('./commands/worktree.js');
+      await runWorktreeCommand(parsed.positional, parsed.flags);
+      break;
+    }
     case 'start':
     case 'setup':
-      await runStart();
+      await runStart(parsed.flags);
       break;
     case 'stop':
-      await runStop();
+      await runStop(parsed.flags);
       break;
+    case 'status': {
+      // Shorthand for 'session status'
+      const { runSessionCommand } = await import('./commands/session.js');
+      await runSessionCommand(['status'], parsed.flags);
+      break;
+    }
     default:
       console.log(`Unknown command: ${parsed.command}\n`);
       console.log(HELP);

@@ -24,12 +24,18 @@ export interface ImpactResult {
   summary: string;
 }
 
-const IGNORE = ['node_modules', '.git', 'dist', '.next', 'build', '.loopspec'];
+const IGNORE = ['node_modules', '.git', 'dist', '.next', 'build', '.loopspec', 'coverage', '__pycache__', '.cache', '.turbo', '.vercel', '.output', 'out', '.svelte-kit', 'logs', 'loopspec-test-output', 'demo-drift'];
+const SOURCE_ONLY_IGNORE = ['tests', 'test', '__tests__', '__mocks__', 'scripts', 'docs', 'examples', 'benchmarks'];
 const EXTS = ['.ts', '.tsx', '.js', '.jsx', '.svelte', '.vue'];
 
-export async function buildGraph(ctx: AppContext): Promise<ProjectGraph> {
+export interface BuildGraphOptions {
+  sourceOnly?: boolean;
+}
+
+export async function buildGraph(ctx: AppContext, opts: BuildGraphOptions = {}): Promise<ProjectGraph> {
   const graph: ProjectGraph = { nodes: [], edges: [] };
-  const files = walk(ctx.projectDir);
+  const ignore = opts.sourceOnly ? [...IGNORE, ...SOURCE_ONLY_IGNORE] : IGNORE;
+  const files = walk(ctx.projectDir, ignore, opts.sourceOnly ?? true);
 
   for (const file of files) {
     const rel = path.relative(ctx.projectDir, file).replace(/\\/g, '/');
@@ -65,7 +71,7 @@ export async function buildGraph(ctx: AppContext): Promise<ProjectGraph> {
     const impRe = /^import\s+(?:\{([^}]+)\}|(\w+))\s+from\s+['"]([^'"]+)['"]/gm;
     while ((m = impRe.exec(content))) {
       const from = m[3];
-      if (from.startsWith('.')) {
+      if (from.startsWith('.') || from.startsWith('@/')) {
         const resolved = resolve(rel, from);
         graph.edges.push({ source: `file:${rel}`, target: `file:${resolved}`, type: 'imports' });
         const names = (m[1] || m[2] || '').split(',').map(s => s.trim().split(' as ')[0].trim()).filter(Boolean);
@@ -141,20 +147,46 @@ export async function loadGraph(ctx: AppContext): Promise<ProjectGraph | null> {
   try { return JSON.parse(fs.readFileSync(path.join(ctx.loopspecDir, 'graph', 'graph.json'), 'utf-8')); } catch { return null; }
 }
 
-function walk(dir: string): string[] {
+function walk(dir: string, ignore: string[], sourceOnly: boolean): string[] {
   const r: string[] = [];
   (function w(d) {
     try { for (const e of fs.readdirSync(d, { withFileTypes: true })) {
-      if (IGNORE.includes(e.name) || e.name.startsWith('.')) continue;
+      if (ignore.includes(e.name) || e.name.startsWith('.')) continue;
       const f = path.join(d, e.name);
-      if (e.isDirectory()) w(f); else if (EXTS.includes(path.extname(e.name))) r.push(f);
+      if (e.isDirectory()) w(f);
+      else if (EXTS.includes(path.extname(e.name)) && !e.name.endsWith('.config.ts') && !e.name.endsWith('.config.js') && !(sourceOnly && (e.name.endsWith('.test.ts') || e.name.endsWith('.spec.ts') || e.name.startsWith('test-')))) r.push(f);
     }} catch {}
   })(dir);
   return r;
 }
 
 function resolve(from: string, imp: string): string {
-  let r = path.posix.join(path.dirname(from).replace(/\\/g, '/'), imp);
-  if (!path.extname(r)) r += '.ts';
-  return r;
+  // Handle @/ alias → src/
+  let normalized = imp;
+  if (normalized.startsWith('@/')) {
+    normalized = 'src/' + normalized.slice(2);
+  }
+
+  let r: string;
+  if (normalized.startsWith('.')) {
+    r = path.posix.join(path.dirname(from).replace(/\\/g, '/'), normalized);
+  } else {
+    r = normalized;
+  }
+
+  // If already has extension, use as-is
+  if (path.extname(r)) return r;
+
+  // Try extensions: .ts, .tsx, .js, .jsx
+  for (const ext of ['.ts', '.tsx', '.js', '.jsx']) {
+    if (fs.existsSync(path.join(r + ext))) return r + ext;
+  }
+
+  // Try /index variants
+  for (const ext of ['.ts', '.tsx', '.js', '.jsx']) {
+    if (fs.existsSync(path.join(r, 'index' + ext))) return r + '/index' + ext;
+  }
+
+  // Default fallback
+  return r + '.ts';
 }

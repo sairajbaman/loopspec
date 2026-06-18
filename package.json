@@ -1,11 +1,11 @@
 {
   "name": "loopspec-mcp",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "The Compound Intelligence Engine for AI Development — MCP server + CLI with sessions, goals, real-time watcher, and smart guardrails",
   "type": "module",
   "bin": {
     "loopspec-mcp": "./dist/server.js",
-    "loopspec": "./dist/cli/index.js"
+    "loopspec": "./dist/cli.js"
   },
   "main": "./dist/server.js",
   "scripts": {

@@ -552,11 +552,21 @@ export async function detectDrift(ctx: AppContext, filePath: string): Promise<Dr
   // Test coverage gap (NEW)
   drifts.push(...checkTestCoverageGap(filePath, ctx.projectDir));
 
-  // Dependency drift (NEW)
-  drifts.push(...await checkDependencyDrift(ctx));
+  // Dependency drift — project-level, deduplicated per session
+  if (!_depDriftCache.has(ctx.projectDir)) {
+    const depDrifts = await checkDependencyDrift(ctx);
+    _depDriftCache.set(ctx.projectDir, depDrifts);
+  }
+  drifts.push(...(_depDriftCache.get(ctx.projectDir) || []));
 
   return drifts;
 }
+
+// Cache dependency drift per project to avoid repeating per-file
+const _depDriftCache = new Map<string, DriftItem[]>();
+
+/** Clear the per-project dependency drift cache (call between sessions) */
+export function clearDriftCache() { _depDriftCache.clear(); }
 
 export function formatDriftReport(drifts: DriftItem[]): string {
   if (drifts.length === 0) return '✅ No drift detected. Code aligns with spec.';

@@ -79,7 +79,7 @@ function getRemovalTargets(): RemovalTarget[] {
   return targets;
 }
 
-export async function runStop() {
+export async function runStop(flags: Record<string, string | boolean> = {}) {
   console.log('\n⚡ LoopSpec Uninstaller\n');
 
   const targets = getRemovalTargets();
@@ -95,10 +95,12 @@ export async function runStop() {
   }
   console.log('');
 
-  const answer = await prompt(`Remove from ${targets.length} tool${targets.length > 1 ? 's' : ''}? [Y/n] `);
-  if (answer.toLowerCase() === 'n') {
-    console.log('Aborted.');
-    return;
+  if (!flags.yes && !flags.y) {
+    const answer = await prompt(`Remove from ${targets.length} tool${targets.length > 1 ? 's' : ''}? [Y/n] `);
+    if (answer.toLowerCase() === 'n') {
+      console.log('Aborted.');
+      return;
+    }
   }
 
   for (const target of targets) {

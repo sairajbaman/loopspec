@@ -97,6 +97,19 @@ function getToolDefinitions(cwd: string): ToolDefinition[] {
       needsRestart: false,
     },
     {
+      name: 'Continue',
+      binaries: [],
+      projectPaths: [path.join(cwd, '.continue', 'config.json')],
+      globalPaths: [
+        isWindows
+          ? path.join(appData, 'continue', 'config.json')
+          : path.join(home, '.continue', 'config.json'),
+      ],
+      configKey: 'mcpServers',
+      needsRestart: true,
+      instructions: 'Restart Continue extension to activate',
+    },
+    {
       name: 'Codebuff',
       binaries: ['codebuff'],
       projectPaths: [path.join(cwd, 'codebuff_config.json')],
@@ -135,39 +148,43 @@ export function detectTools(cwd: string = process.cwd()): DetectedTool[] {
     let configPath: string | null = null;
     let detectedVia = '';
 
-    // Check project-level paths first (preferred)
-    for (const p of tool.projectPaths) {
-      if (existsSync(p) || existsSync(path.dirname(p))) {
-        configPath = p;
-        detectedVia = 'project folder';
+    // First: check if any binary is on PATH (strongest signal)
+    let hasBinary = false;
+    for (const bin of tool.binaries) {
+      if (binaryExists(bin)) {
+        hasBinary = true;
+        detectedVia = `PATH (${bin})`;
         break;
       }
     }
 
-    // Check global paths
+    // Check project-level config files (file must actually exist, not just parent dir)
+    for (const p of tool.projectPaths) {
+      if (existsSync(p)) {
+        configPath = p;
+        if (!detectedVia) detectedVia = 'project config';
+        break;
+      }
+    }
+
+    // Check global config files (file must actually exist)
     if (!configPath) {
       for (const p of tool.globalPaths) {
-        if (existsSync(p) || existsSync(path.dirname(p))) {
+        if (existsSync(p)) {
           configPath = p;
-          detectedVia = 'global config';
+          if (!detectedVia) detectedVia = 'global config';
           break;
         }
       }
     }
 
-    // Check PATH binaries
-    if (!configPath) {
-      for (const bin of tool.binaries) {
-        if (binaryExists(bin)) {
-          // Binary found but no config folder — use the first project path if available, else global
-          configPath = tool.projectPaths[0] || tool.globalPaths[0] || null;
-          detectedVia = `PATH (${bin})`;
-          break;
-        }
-      }
+    // If binary found but no existing config, determine where to write
+    if (!configPath && hasBinary) {
+      configPath = tool.projectPaths[0] || tool.globalPaths[0] || null;
     }
 
-    if (configPath) {
+    // Only detect if we have proof: binary on PATH or config file exists
+    if (configPath && (hasBinary || existsSync(configPath))) {
       const hasExisting = existsSync(configPath) && configHasLoopspec(configPath, tool.configKey);
       detected.push({
         name: tool.name,

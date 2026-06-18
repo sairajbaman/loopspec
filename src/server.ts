@@ -82,6 +82,9 @@ async function startMcpServer() {
   });
 }
 
+// Commands that should route to the CLI instead of starting the MCP server
+const CLI_COMMANDS = ['status', 'session', 'check', 'watch', 'review', 'suggest', 'graph', 'profile', 'plugin', 'connect', 'help', 'predict', 'worktree', 'compound', 'preflight'];
+
 async function main() {
   const args = process.argv.slice(2);
 
@@ -90,11 +93,20 @@ async function main() {
     process.exit(0);
   }
 
+  if (args.includes('--version') || args.includes('-v')) {
+    console.log('loopspec-mcp v2.0.2');
+    process.exit(0);
+  }
+
   if (args[0] === 'setup' || args[0] === 'start') {
     await runSetup();
   } else if (args[0] === 'stop') {
     const { runStop } = await import('./cli/stop.js');
     await runStop();
+  } else if (args[0] && CLI_COMMANDS.includes(args[0])) {
+    // Route known CLI commands to the CLI entry point
+    const { main: cliMain } = await import('./cli/index.js');
+    await cliMain();
   } else {
     await startMcpServer();
   }

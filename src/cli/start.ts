@@ -62,7 +62,7 @@ function writeManifest(tools: DetectedTool[]) {
   writeFileSync(path.join(dir, 'registered-tools.json'), JSON.stringify(manifest, null, 2) + '\n');
 }
 
-export async function runStart() {
+export async function runStart(flags: Record<string, string | boolean> = {}) {
   console.log('\n⚡ LoopSpec Universal Installer\n');
 
   const tools = detectTools();
@@ -90,10 +90,13 @@ export async function runStart() {
     return;
   }
 
-  const answer = await prompt(`Configure ${configurable.length} tool${configurable.length > 1 ? 's' : ''}? [Y/n] `);
-  if (answer.toLowerCase() === 'n') {
-    console.log('Aborted.');
-    return;
+  // --yes / -y flag for CI/scripting (skip interactive prompt)
+  if (!flags.yes && !flags.y) {
+    const answer = await prompt(`Configure ${configurable.length} tool${configurable.length > 1 ? 's' : ''}? [Y/n] `);
+    if (answer.toLowerCase() === 'n') {
+      console.log('Aborted.');
+      return;
+    }
   }
 
   let successCount = 0;

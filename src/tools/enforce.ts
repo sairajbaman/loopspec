@@ -16,17 +16,9 @@ fi
 
 echo "🔄 LoopSpec: Checking staged files..."
 
-# Run drift detection on staged files
-DRIFT_OUTPUT=$(echo "$STAGED_FILES" | while read file; do
-  node -e "
-    import('./node_modules/loopspec-mcp/dist/server.js').catch(() => {});
-  " 2>/dev/null
-done)
-
-# Check for high-severity issues via the MCP server
 HAS_HIGH=0
 for file in $STAGED_FILES; do
-  # Quick structural checks without spawning the full MCP server
+  # Auth check: protected routes must have auth
   if echo "$file" | grep -qE "(dashboard|admin|settings|profile)" ; then
     if ! grep -qE "(getSession|auth\\(\\)|middleware|useSession|getServerSession)" "$file" 2>/dev/null; then
       echo "🔴 HIGH: $file — Protected route missing auth check"
@@ -34,10 +26,24 @@ for file in $STAGED_FILES; do
     fi
   fi
 
-  # Check for any types in TypeScript files
+  # Type safety: block excessive any types
   ANY_COUNT=$(grep -c ": any" "$file" 2>/dev/null || echo 0)
   if [ "$ANY_COUNT" -gt 3 ]; then
     echo "🟡 MEDIUM: $file — Found $ANY_COUNT 'any' types (max 3 allowed)"
+  fi
+
+  # API routes: must have error handling
+  if echo "$file" | grep -qE "(api|route)" ; then
+    if ! grep -qE "(try|catch|throw|ErrorResponse)" "$file" 2>/dev/null; then
+      echo "🔴 HIGH: $file — API route missing error handling"
+      HAS_HIGH=1
+    fi
+  fi
+
+  # Block @ts-nocheck
+  if grep -q "@ts-nocheck" "$file" 2>/dev/null; then
+    echo "🔴 HIGH: $file — Contains @ts-nocheck"
+    HAS_HIGH=1
   fi
 done
 

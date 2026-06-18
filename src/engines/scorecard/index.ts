@@ -1,4 +1,5 @@
 import path from 'node:path';
+import fs from 'node:fs';
 import type { AppContext } from '../../context.js';
 import { readFile, listFiles } from '../../utils/files.js';
 import { detectDrift } from '../live-sync/index.js';
@@ -101,69 +102,132 @@ function scoreDesignMatch(content: string, designSystem: string | null): { score
   return { score: Math.max(0, score), issues };
 }
 
-// Detect test coverage from file structure
+// Detect test coverage from file structure — actually checks filesystem
 function scoreTestCoverage(files: string[], projectDir: string): { score: number; issues: string[] } {
   const issues: string[] = [];
   let testedCount = 0;
+  let sourceCount = 0;
 
   for (const file of files) {
+    // Skip test files, config files, type declaration files
+    if (file.match(/\.(test|spec)\.\w+$/) || file.match(/\.(config|d)\.\w+$/) || file.includes('__tests__')) continue;
+    if (!file.match(/\.(ts|tsx|js|jsx)$/)) continue;
+    sourceCount++;
+
     const ext = path.extname(file);
     const base = file.replace(ext, '');
+    const dir = path.dirname(path.isAbsolute(file) ? file : path.join(projectDir, file));
+    const baseName = path.basename(file, ext);
+
     const possibleTests = [
-      `${base}.test${ext}`,
-      `${base}.spec${ext}`,
-      file.replace(/src\//, 'tests/').replace(ext, `.test${ext}`),
-      file.replace(/src\//, '__tests__/').replace(ext, `.test${ext}`),
+      path.join(dir, `${baseName}.test${ext}`),
+      path.join(dir, `${baseName}.spec${ext}`),
+      path.join(dir, `${baseName}.test.ts`),
+      path.join(dir, `${baseName}.test.tsx`),
+      path.join(dir, '__tests__', `${baseName}.test${ext}`),
+      path.join(dir, '__tests__', `${baseName}.test.ts`),
+      path.join(projectDir, 'tests', `${baseName}.test.ts`),
+      path.join(projectDir, 'tests', `${baseName}.test.tsx`),
+      path.join(projectDir, '__tests__', `${baseName}.test.ts`),
     ];
-    // We can't check filesystem here efficiently, but we mark it
-    testedCount++; // Placeholder: real impl would check existence
+
+    const hasTest = possibleTests.some(p => {
+      try { return fs.existsSync(p); } catch { return false; }
+    });
+
+    if (hasTest) testedCount++;
   }
 
-  // Heuristic: check if any test patterns exist in content
-  let score = 40; // base — assumes minimal testing
-  if (files.some(f => f.includes('.test.') || f.includes('.spec.'))) score += 30;
+  sourceCount = Math.max(sourceCount, 1);
+  const coverage = Math.round((testedCount / sourceCount) * 100);
+  const score = Math.min(100, coverage);
 
-  if (score < 60) issues.push('Low test coverage — add unit tests for core logic');
-  return { score: Math.min(100, score), issues };
+  if (score < 60) issues.push(`Low test coverage: ${testedCount}/${sourceCount} source files have tests`);
+
+  return { score, issues };
 }
 
 // Check spec compliance with positive + negative signals
-async function scoreSpecCompliance(ctx: AppContext, content: string, filePath: string): Promise<{ score: number; issues: string[] }> {
-  let score = 70; // neutral start
+async function scoreSpecCompliance(ctx: AppContext, content: string, filePath: string): Promise<{ score: number; issues: string[]; positives: string[] }> {
+  let score = 50; // start neutral — earn your way up
   const issues: string[] = [];
+  const positives: string[] = [];
 
   const skill = await readFile(path.join(ctx.loopspecDir, 'SKILL.md'));
   const schema = await readFile(path.join(ctx.loopspecDir, 'Schema.md'));
+  const trd = await readFile(path.join(ctx.loopspecDir, 'TRD.md'));
 
-  // Positive: uses types/interfaces from schema
-  if (schema && content.match(/interface\s+\w+|type\s+\w+\s*=/)) {
-    score += 10; // types defined
+  // ─── Positive signals (earn up to +50) ────────────────────────────────────
+
+  // Types defined → strong positive
+  if (content.match(/interface\s+\w+|type\s+\w+\s*=/)) {
+    score += 10;
+    positives.push('✓ Types/interfaces defined');
   }
 
-  // Positive: proper error handling
+  // Proper error handling
   if (content.match(/try\s*\{|\.catch\(|ErrorBoundary/)) {
-    score += 5;
+    score += 8;
+    positives.push('✓ Error handling present');
   }
 
-  // Positive: input validation
-  if (content.match(/z\.\w+|zod|yup|joi|validate/i)) {
-    score += 5;
+  // Input validation
+  if (content.match(/z\.\w+|zod|yup|joi|validate|safeParse/i)) {
+    score += 8;
+    positives.push('✓ Input validation');
   }
 
-  // Negative: console.log in production code
+  // Loading/empty/error states handled
+  const statePatterns = [/loading|isLoading|isPending|Skeleton|Spinner/i, /empty.*state|no.*found|\.length\s*===?\s*0/i, /error|isError|ErrorBoundary/i];
+  const statesHandled = statePatterns.filter(p => p.test(content)).length;
+  if (statesHandled >= 2) {
+    score += 8;
+    positives.push(`✓ UI states handled (${statesHandled}/3)`);
+  }
+
+  // Named exports (clean API surface)
+  if (content.match(/export\s+(?:function|const|class|type|interface)\s+\w+/) && !content.match(/export\s+default/)) {
+    score += 5;
+    positives.push('✓ Named exports only');
+  }
+
+  // Follows file structure from TRD (route grouping, colocation)
+  if (trd && filePath.match(/src\//)) {
+    const fileDir = path.dirname(filePath);
+    if (trd.toLowerCase().includes(fileDir.replace(/\\/g, '/'))) {
+      score += 7;
+      positives.push('✓ Follows TRD file structure');
+    }
+  }
+
+  // Proper async patterns
+  if (content.match(/async\s+function|await\s+/) && content.match(/try\s*\{/)) {
+    score += 5;
+    positives.push('✓ Async with error handling');
+  }
+
+  // No any types at all → strong positive
+  if (!content.match(/:\s*any(?:\s|;|,|\)|\])/) && content.match(/:\s*\w/)) {
+    score += 7;
+    positives.push('✓ Strict types (no `any`)');
+  }
+
+  // ─── Negative signals (deduct up to -50) ──────────────────────────────────
+
+  // console.log in production code
   if (content.match(/console\.\w+/) && !filePath.includes('test') && !filePath.includes('debug')) {
     score -= 5;
     issues.push('console.log in production code');
   }
 
-  // Negative: TODO/FIXME indicating incomplete work
+  // TODO/FIXME markers
   const todos = (content.match(/(?:TODO|FIXME|HACK|XXX)/g) || []).length;
   if (todos > 0) {
     score -= todos * 3;
     issues.push(`${todos} TODO/FIXME markers — incomplete implementation`);
   }
 
-  // Check SKILL conventions
+  // SKILL convention violations
   if (skill) {
     if (skill.includes('no default export') && content.match(/export\s+default/)) {
       score -= 10;
@@ -175,7 +239,13 @@ async function scoreSpecCompliance(ctx: AppContext, content: string, filePath: s
     }
   }
 
-  return { score: Math.max(0, Math.min(100, score)), issues };
+  // @ts-ignore
+  if (content.match(/@ts-ignore|@ts-nocheck/)) {
+    score -= 8;
+    issues.push('Uses @ts-ignore/@ts-nocheck');
+  }
+
+  return { score: Math.max(0, Math.min(100, score)), issues, positives };
 }
 
 export async function scoreTask(ctx: AppContext, task: string, files: string[]): Promise<ScoreResult> {
@@ -188,6 +258,7 @@ export async function scoreTask(ctx: AppContext, task: string, files: string[]):
   let totalDrift = 100;
   let patternMatch = 85;
   let fileCount = 0;
+  const allPositives: string[] = [];
 
   const designSystem = await readFile(path.join(ctx.loopspecDir, 'DesignSystem.md'));
 
@@ -205,6 +276,7 @@ export async function scoreTask(ctx: AppContext, task: string, files: string[]):
     const spec = await scoreSpecCompliance(ctx, content, file);
     totalSpecCompliance += spec.score;
     if (spec.issues.length) breakdown[`spec:${file}`] = spec.issues.join('; ');
+    allPositives.push(...spec.positives);
 
     // Real accessibility analysis
     const a11y = scoreAccessibility(content, file);
@@ -242,6 +314,10 @@ export async function scoreTask(ctx: AppContext, task: string, files: string[]):
   if (designMatch < 80) suggestions.push('Use design tokens — avoid hardcoded colors/spacing');
   if (patternMatch < 80) suggestions.push('Fix type safety — remove `any` and @ts-ignore');
 
+  // Add unique positives to breakdown
+  const uniquePositives = [...new Set(allPositives)];
+  if (uniquePositives.length) breakdown['positives'] = uniquePositives.join('; ');
+
   return { specCompliance, patternMatch, driftScore, testCoverage, accessibility, designMatch, overall, suggestions, breakdown };
 }
 
@@ -265,10 +341,17 @@ export function formatScorecard(score: ScoreResult, task: string): string {
     card += '\n\n### Suggestions\n' + score.suggestions.map(s => `- ${s}`).join('\n');
   }
 
+  if (score.breakdown.positives) {
+    card += '\n\n### What You Did Right\n' + score.breakdown.positives.split('; ').map(s => `- ${s}`).join('\n');
+  }
+
   if (Object.keys(score.breakdown).length) {
-    card += '\n\n### Details\n';
-    for (const [key, val] of Object.entries(score.breakdown)) {
-      card += `- **${key}:** ${val}\n`;
+    const issues = Object.entries(score.breakdown).filter(([k]) => k !== 'positives');
+    if (issues.length) {
+      card += '\n\n### Issues\n';
+      for (const [key, val] of issues) {
+        card += `- **${key}:** ${val}\n`;
+      }
     }
   }
 
