@@ -511,27 +511,25 @@ export async function detectDrift(ctx: AppContext, filePath: string): Promise<Dr
     });
   }
 
-  // Type safety
-  if (exp.strictTypes) {
-    const anyCount = countMatches(content, PATTERNS.typeAny);
-    if (anyCount > 0) {
-      drifts.push({
-        file: filePath,
-        specExpectation: 'No `any` types (per SKILL.md)',
-        codeReality: `${anyCount} instance(s) of \`any\` or @ts-ignore`,
-        severity: anyCount > 3 ? 'high' : 'medium',
-        suggestion: 'Replace `any` with proper types or `unknown` + narrowing',
-        category: 'type-safety',
-        autoFixable: false,
-      });
-    }
-  }
-
-  // Named exports
-  if (exp.namedExports && isUIFile && hasPattern(content, PATTERNS.defaultExport)) {
+  // Type safety — ALWAYS check (these are universal code quality issues)
+  const anyCount = countMatches(content, PATTERNS.typeAny);
+  if (anyCount > 0) {
     drifts.push({
       file: filePath,
-      specExpectation: 'Named exports only (per SKILL.md)',
+      specExpectation: 'No `any` types or @ts-ignore (TypeScript best practice)',
+      codeReality: `${anyCount} instance(s) of \`any\` or @ts-ignore`,
+      severity: anyCount > 3 ? 'high' : 'medium',
+      suggestion: 'Replace `any` with proper types or `unknown` + narrowing',
+      category: 'type-safety',
+      autoFixable: false,
+    });
+  }
+
+  // Named exports — always flag default exports in component files
+  if (isUIFile && hasPattern(content, PATTERNS.defaultExport)) {
+    drifts.push({
+      file: filePath,
+      specExpectation: 'Use named exports (enables tree-shaking, better refactoring)',
       codeReality: 'Uses `export default`',
       severity: 'low',
       suggestion: 'Change to `export function ComponentName` or `export const ComponentName`',

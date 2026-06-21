@@ -35,7 +35,7 @@ import { registerDecisionTool, registerCheckpointTool } from './decision-tool.js
 import { registerGuidanceTool } from './guidance-tool.js';
 import { registerStatusTool } from './status-tool.js';
 
-// v2.0 neural tools
+// v2.0 code intelligence tools
 import {
   registerGraphTool,
   registerProfilerTool,
@@ -44,7 +44,7 @@ import {
   registerContractsTool,
   registerPluginTool,
   registerSandboxTool,
-} from './neural-tools.js';
+} from './code-intelligence.js';
 import { registerPredictTool } from './predict-tool.js';
 
 // v2.2 Loop Engineering engines
@@ -120,7 +120,7 @@ export function registerAllTools(server: McpServer, ctx: AppContext) {
   // Smart guidance
   registerGuidanceTool(server, ctx);
 
-  // === v2.0 NEURAL TOOLS ===
+  // === v2.0 CODE INTELLIGENCE TOOLS ===
   // Graph-of-Thought
   registerGraphTool(server, ctx);
 
