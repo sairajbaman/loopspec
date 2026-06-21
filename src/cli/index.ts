@@ -43,7 +43,7 @@ export function parseArgs(argv: string[]): ParsedArgs {
 }
 
 const HELP = `
-loopspec v2.1.0 — The Compound Intelligence Engine for AI Development
+loopspec v2.4.0 — The Loop Engineering Engine for AI Development
 
 Usage:
   loopspec <command> [options]
@@ -177,7 +177,7 @@ export async function main() {
   }
 
   if (parsed.flags.version) {
-    console.log('loopspec v2.1.0');
+    console.log('loopspec v2.4.0');
     return;
   }
 
@@ -189,7 +189,7 @@ export async function main() {
       break;
     case '--version':
     case '-V':
-      console.log('loopspec v2.1.0');
+      console.log('loopspec v2.4.0');
       break;
     case 'session':
       await runSession(parsed);

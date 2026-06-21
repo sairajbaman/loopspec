@@ -2,6 +2,7 @@ import * as z from 'zod/v4';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { AppContext } from '../context.js';
 import { initSwarm, addAgent, assignTask, reportResult, orchestrate, getSwarmStatus, pauseSwarm } from '../engines/swarm/index.js';
+import { executeViaHostLLM } from '../engines/execution/index.js';
 
 export function registerSwarmTool(server: McpServer, ctx: AppContext) {
   server.registerTool('loopspec_swarm', {
@@ -44,8 +45,19 @@ export function registerSwarmTool(server: McpServer, ctx: AppContext) {
         if (!args.swarmId) return { content: [{ type: 'text', text: '❌ `swarmId` required' }] };
         const { nextActions } = await orchestrate(ctx, args.swarmId);
         if (nextActions.length === 0) return { content: [{ type: 'text', text: '✓ No pending actions — swarm idle or complete.' }] };
-        const lines = nextActions.map(a => `• ${a.agentId}: ${a.action} → ${(a.task || '').slice(0, 80)}`);
-        return { content: [{ type: 'text', text: `## Next Actions (${nextActions.length})\n${lines.join('\n')}` }] };
+
+        // Actually execute each action via the host LLM
+        const results: string[] = [];
+        for (const action of nextActions) {
+          await assignTask(ctx, args.swarmId, action.agentId, action.task || '');
+          const exec = await executeViaHostLLM(
+            action.task || '',
+            `You are agent "${action.agentId}" in a swarm. Your role: execute this task completely.`
+          );
+          await reportResult(ctx, args.swarmId, action.agentId, exec.output, exec.success);
+          results.push(`${exec.success ? '✓' : '✗'} ${action.agentId}: ${exec.output.slice(0, 200)}`);
+        }
+        return { content: [{ type: 'text', text: `## Swarm Execution (${results.length} agents ran)\n${results.join('\n\n')}` }] };
       }
       case 'pause': {
         if (!args.swarmId) return { content: [{ type: 'text', text: '❌ `swarmId` required' }] };

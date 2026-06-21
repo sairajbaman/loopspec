@@ -4,12 +4,13 @@ import { createContext } from './context.js';
 import { registerAllTools } from './tools/index.js';
 import { registerAllResources } from './resources/index.js';
 import { registerAllPrompts } from './prompts/index.js';
+import { setServer } from './engines/execution/index.js';
 
 const isWindows = process.platform === 'win32';
 
 function printHelp() {
   const cmd = isWindows ? 'cmd /c npx -y loopspec-mcp' : 'npx -y loopspec-mcp';
-  console.log(`loopspec-mcp v2.0.0 - The Compound Intelligence Engine for AI Development
+  console.log(`loopspec-mcp v2.4.0 - The Loop Engineering Engine for AI Development
 
 Usage:
   npx loopspec-mcp          Start MCP server (stdio transport)
@@ -55,7 +56,7 @@ async function runSetup() {
 
 async function startMcpServer() {
   const server = new McpServer(
-    { name: 'loopspec', version: '2.0.0' },
+    { name: 'loopspec', version: '2.4.0' },
     {
       instructions:
         'LoopSpec is a compound intelligence engine for AI development. ' +
@@ -72,9 +73,12 @@ async function startMcpServer() {
   registerAllResources(server, ctx);
   registerAllPrompts(server, ctx);
 
+  // Wire execution bridge — enables swarm/daemon/deploy to call the host LLM
+  setServer(server.server);
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error('LoopSpec MCP server v2.0.0 running (42 tools, 12 resources, 4 prompts)');
+  console.error('LoopSpec MCP server v2.4.0 running');
 
   process.on('SIGINT', async () => {
     await server.close();
@@ -94,7 +98,7 @@ async function main() {
   }
 
   if (args.includes('--version') || args.includes('-v')) {
-    console.log('loopspec-mcp v2.1.0');
+    console.log('loopspec-mcp v2.4.0');
     process.exit(0);
   }
 

@@ -173,5 +173,9 @@ async function loadAllSwarms(ctx: AppContext): Promise<SwarmRun[]> {
       if (content) runs.push(parseYaml<SwarmRun>(content));
     }
     return runs.sort((a, b) => b.startedAt - a.startedAt);
-  } catch { return []; }
+  } catch (err: unknown) {
+    // Directory doesn't exist = no swarms yet; other errors are logged
+    if (err instanceof Error && !err.message.includes('ENOENT')) console.error('swarm loadAll error:', err.message);
+    return [];
+  }
 }

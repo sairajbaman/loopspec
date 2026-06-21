@@ -2,6 +2,7 @@ import * as z from 'zod/v4';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { AppContext } from '../context.js';
 import { initDaemon, enableDaemon, disableDaemon, addDaemonTask, removeDaemonTask, tick, recordCompletion, getDaemonStatus } from '../engines/daemon/index.js';
+import { executeViaHostLLM } from '../engines/execution/index.js';
 
 export function registerDaemonTool(server: McpServer, ctx: AppContext) {
   server.registerTool('loopspec_daemon', {
@@ -51,8 +52,16 @@ export function registerDaemonTool(server: McpServer, ctx: AppContext) {
       case 'tick': {
         const { triggered, state } = await tick(ctx);
         if (triggered.length === 0) return { content: [{ type: 'text', text: `✓ Tick complete. No tasks due.\nLast tick: ${new Date(state.lastTick).toISOString()}` }] };
-        const lines = triggered.map(t => `• ${t.name} (${t.action}) — execute now`);
-        return { content: [{ type: 'text', text: `## Triggered Tasks (${triggered.length})\n${lines.join('\n')}\n\nExecute each and call action=complete with taskId + success.` }] };
+
+        // Actually execute each triggered task via the host LLM
+        const results: string[] = [];
+        for (const task of triggered) {
+          const prompt = buildDaemonPrompt(task.action, ctx.projectDir);
+          const exec = await executeViaHostLLM(prompt, `Autonomous daemon task: ${task.name}`);
+          await recordCompletion(ctx, task.id, exec.success, exec.output);
+          results.push(`${exec.success ? '✓' : '✗'} ${task.name}: ${exec.output.slice(0, 150)}`);
+        }
+        return { content: [{ type: 'text', text: `## Daemon Tick — ${triggered.length} tasks executed\n${results.join('\n\n')}` }] };
       }
       case 'complete': {
         if (!args.taskId || args.success === undefined) return { content: [{ type: 'text', text: '❌ `taskId` and `success` required' }] };
@@ -69,4 +78,21 @@ export function registerDaemonTool(server: McpServer, ctx: AppContext) {
         return { content: [{ type: 'text', text: '❌ Unknown action' }] };
     }
   });
+}
+
+function buildDaemonPrompt(action: string, projectDir: string): string {
+  switch (action) {
+    case 'security-scan':
+      return `Run a security audit on the project at ${projectDir}. Check for: hardcoded secrets, SQL injection, XSS, missing input validation, insecure dependencies. Report findings.`;
+    case 'drift-check':
+      return `Check if the code at ${projectDir} has drifted from its spec. Look for: TODOs left behind, inconsistent naming, dead code, missing error handling. Report deviations.`;
+    case 'docs-update':
+      return `Review the code at ${projectDir} and suggest documentation updates. Check if README, JSDoc comments, and API docs are current.`;
+    case 'test-run':
+      return `Run the test suite at ${projectDir}. Report results: total tests, passing, failing, coverage gaps.`;
+    case 'compound-learn':
+      return `Analyze recent changes at ${projectDir}. Extract patterns: what conventions are used, what mistakes were fixed, what could be automated next time.`;
+    default:
+      return `Execute this task for the project at ${projectDir}: ${action}`;
+  }
 }

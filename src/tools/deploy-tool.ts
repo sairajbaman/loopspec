@@ -2,6 +2,7 @@ import * as z from 'zod/v4';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { AppContext } from '../context.js';
 import { initDeployLoop, startDeploy, advanceStage, completeStage, getDeployStatus, stageInstructions } from '../engines/deploy-loop/index.js';
+import { executeViaHostLLM } from '../engines/execution/index.js';
 
 export function registerDeployLoopTool(server: McpServer, ctx: AppContext) {
   server.registerTool('loopspec_deploy', {
@@ -30,9 +31,20 @@ export function registerDeployLoopTool(server: McpServer, ctx: AppContext) {
         if (!args.deployId) return { content: [{ type: 'text', text: '❌ `deployId` required' }] };
         const { current, run, needsApproval } = await advanceStage(ctx, args.deployId);
         if (!current) return { content: [{ type: 'text', text: `✓ Deploy ${run.id} complete. Final status: ${run.status}` }] };
+
+        if (needsApproval) {
+          return { content: [{ type: 'text', text: `⚠️ HUMAN APPROVAL REQUIRED before deploying to production.\nCall action=advance again after approval, or action=complete stage=deploy passed=false to abort.` }] };
+        }
+
+        // Actually execute the stage via host LLM
         const instructions = stageInstructions(current.stage, run.config);
-        let text = `## Stage: ${current.stage.toUpperCase()}\n\n${instructions}\n\nWhen done, call action=complete with stage="${current.stage}" and passed=true/false.`;
-        if (needsApproval) text += '\n\n⚠️ HUMAN APPROVAL REQUIRED before deploying to production.';
+        const exec = await executeViaHostLLM(instructions, `Deploy pipeline stage: ${current.stage}`);
+        const updated = await completeStage(ctx, args.deployId, current.stage, exec.success, exec.output);
+
+        let text = `## Stage: ${current.stage.toUpperCase()} — ${exec.success ? 'PASSED ✓' : 'FAILED ✗'}\n\n${exec.output.slice(0, 500)}`;
+        if (updated.status === 'rolled-back') text += '\n\n🔄 Auto-rollback triggered.';
+        if (updated.status === 'passed') text += '\n\n🎉 All stages passed! Deployment successful.';
+        if (updated.status === 'failed') text += `\n\n❌ Pipeline failed at ${current.stage}. Remaining stages skipped.`;
         return { content: [{ type: 'text', text }] };
       }
       case 'complete': {

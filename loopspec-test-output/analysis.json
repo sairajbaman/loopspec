@@ -1,0 +1,34 @@
+{
+  "productType": "marketplace",
+  "targetUser": "artists",
+  "industry": "ecommerce",
+  "impliedStack": "go-fiber",
+  "complexity": "complex",
+  "keywords": [
+    "marketplace",
+    "local",
+    "artists",
+    "sell",
+    "original",
+    "paintings,",
+    "prints,",
+    "digital",
+    "artwork",
+    "directly",
+    "buyers.",
+    "artists",
+    "should",
+    "able",
+    "storefronts,"
+  ],
+  "features": [
+    "high-res images",
+    "set prices",
+    "and manage orders",
+    "e securely"
+  ],
+  "confidence": {
+    "industry": 1,
+    "complexity": 1
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "PRD.md": {
+    "lines": 39,
+    "words": 309,
+    "chars": 1716,
+    "deterministic": false
+  },
+  "TRD.md": {
+    "lines": 91,
+    "words": 466,
+    "chars": 2817,
+    "deterministic": true
+  },
+  "AppFlow.md": {
+    "lines": 49,
+    "words": 298,
+    "chars": 1803,
+    "deterministic": true
+  },
+  "UIBrief.md": {
+    "lines": 24,
+    "words": 175,
+    "chars": 1134,
+    "deterministic": false
+  },
+  "Schema.md": {
+    "lines": 110,
+    "words": 667,
+    "chars": 3815,
+    "deterministic": true
+  },
+  "Plan.md": {
+    "lines": 23,
+    "words": 128,
+    "chars": 820,
+    "deterministic": false
+  },
+  "SKILL.md": {
+    "lines": 57,
+    "words": 231,
+    "chars": 1558,
+    "deterministic": false
+  },
+  "DesignSystem.md": {
+    "lines": 24,
+    "words": 78,
+    "chars": 613,
+    "deterministic": false
+  }
+}

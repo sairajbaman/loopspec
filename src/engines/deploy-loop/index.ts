@@ -142,5 +142,8 @@ async function loadAllDeploys(ctx: AppContext): Promise<DeployRun[]> {
       if (content) runs.push(parseYaml<DeployRun>(content));
     }
     return runs.sort((a, b) => b.startedAt - a.startedAt).slice(0, 20);
-  } catch { return []; }
+  } catch (err: unknown) {
+    if (err instanceof Error && !err.message.includes('ENOENT')) console.error('deploy loadAll error:', err.message);
+    return [];
+  }
 }

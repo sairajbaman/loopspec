@@ -1,0 +1,17 @@
+{
+  "servers": {
+    "loopspec": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "loopspec-mcp"
+      ],
+      "env": {
+        "LOOPSPEC_PROJECT_DIR": "D:\\New folder (15)\\loopspec"
+      },
+      "type": "stdio"
+    }
+  }
+}

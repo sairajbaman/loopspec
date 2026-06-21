@@ -172,5 +172,8 @@ async function loadAllPlans(ctx: AppContext): Promise<OrchestrationPlan[]> {
       if (content) plans.push(parseYaml<OrchestrationPlan>(content));
     }
     return plans.sort((a, b) => b.startedAt - a.startedAt).slice(0, 20);
-  } catch { return []; }
+  } catch (err: unknown) {
+    if (err instanceof Error && !err.message.includes('ENOENT')) console.error('orchestrator loadAll error:', err.message);
+    return [];
+  }
 }

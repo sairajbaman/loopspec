@@ -8,7 +8,7 @@
 
 > **Stop prompting. Start looping.**
 > The first MCP server that implements Loop Engineering — autonomous agents orchestrating agents, learning every cycle, shipping without you.
-> Zero API calls. 164 tests. 47 tools. 232KB. Fully offline.
+> Zero API calls. 164 tests. 49 tools. 232KB. Fully offline.
 
 ---
 
@@ -75,13 +75,13 @@ You define the system. The system runs itself.
 | **🤖 Autonomous Daemon** | Background loop that runs security scans, drift checks, docs updates, test runs — on schedule, no human needed |
 | **🚀 Auto-Deploy Pipeline** | Full CI/CD: build → test → lint → security → deploy → verify → monitor. Auto-rollback on failure |
 | **🔄 Cross-Agent Orchestrator** | Loops that spawn sub-loops. A tree of autonomous work. "Build a SaaS" spawns "design DB" + "build API" + "build UI" loops |
-| **🧠 Persistent Memory** | Bayesian learning that compounds across sessions. Your AI never forgets conventions |
+| **🧠 Persistent Memory** | Pattern extraction that compounds across sessions. Your AI never forgets conventions |
 | **🎯 Prompt Amplifier** | Turns vague prompts into structured, research-backed instructions with thinking frames and success criteria |
 | **🔍 Real-time Drift Detection** | 7 categories of drift caught live. Spec says X, code does Y? Caught instantly |
 | **📊 Quality Scorecard** | 6-dimension scoring on every checkpoint. No more "it looks fine" |
-| **🔮 Inverse Reasoning** | Predicts what code SHOULD look like before writing. Catches missing patterns |
+| **🔮 Code Prediction** | Predicts expected patterns before writing — compares after to catch gaps |
 | **🔗 Dependency Graph** | Knows what depends on what. Change a type? Shows you all 12 files that need updating |
-| **🧪 Self-Healing Specs** | When code drifts from spec, choose: update the spec or fix the code. Ripple analysis included |
+| **🧪 Spec Sync** | When code drifts from spec, choose: update the spec or fix the code. Ripple analysis included |
 | **🎓 Model Profiler** | Tracks your AI's blind spots (accessibility? loading states?) and auto-compensates |
 
 ---
@@ -232,7 +232,7 @@ The orchestrator spawns sub-loops (max depth 3, max 10 loops). Each sub-loop can
 
 ---
 
-## 47 Tools Reference
+## 49 Tools Reference
 
 ### Orientation
 | Tool | Purpose |
@@ -283,21 +283,21 @@ The orchestrator spawns sub-loops (max depth 3, max 10 loops). Each sub-loop can
 | `loopspec_verify` | Adversarial code review |
 | `loopspec_typecheck` | TypeScript type checking |
 
-### Neural Intelligence
+### Code Intelligence
 | Tool | Purpose |
 |---|---|
 | `loopspec_graph` | Dependency graph + impact analysis |
 | `loopspec_profile` | Model blind-spot tracking |
 | `loopspec_autocomplete` | Spec-derived code snippets |
-| `loopspec_heal` | Self-healing specs (accept/revert drift) |
+| `loopspec_heal` | Spec sync (accept/revert drift) |
 | `loopspec_contracts` | Frontend/backend API match |
 | `loopspec_guidance` | Smart help when stuck |
-| `loopspec_predict` | Inverse reasoning — predict before write |
+| `loopspec_predict` | Predict expected patterns before writing |
 
 ### Learning & Memory
 | Tool | Purpose |
 |---|---|
-| `loopspec_compound` | Extract patterns (Bayesian NLP) |
+| `loopspec_compound` | Extract patterns from completed work |
 | `loopspec_playbook` | Search past learnings across projects |
 | `loopspec_feedback` | Record quality signals |
 | `loopspec_infer` | Predict best approach |
@@ -384,9 +384,9 @@ loopspec profile
 ```
 loopspec/                            📦 232KB ESM bundle
 ├── src/
-│   ├── server.ts                ← MCP server (47 tools)
+│   ├── server.ts                ← MCP server (49 tools)
 │   ├── cli/                     ← CLI (17 commands)
-│   ├── tools/                   ← 47 MCP tool handlers
+│   ├── tools/                   ← 49 MCP tool handlers
 │   └── engines/                 ← 21 intelligence engines
 │       ├── swarm/               ← Multi-agent orchestration (4 strategies)
 │       ├── daemon/              ← Autonomous scheduled loops
@@ -397,9 +397,9 @@ loopspec/                            📦 232KB ESM bundle
 │       ├── goals/               ← Goal decomposition + verification
 │       ├── graph/               ← Dependency graph + impact analysis
 │       ├── profiler/            ← Blind spot tracking (9 categories)
-│       ├── predict/             ← Inverse reasoning
+│       ├── predict/             ← Pattern prediction
 │       ├── self-heal/           ← Drift accept/revert + ripple analysis
-│       ├── memory/              ← Bayesian learning + cross-project playbook
+│       ├── memory/              ← Pattern extraction + cross-project playbook
 │       ├── live-sync/           ← Drift detection (7 categories)
 │       ├── scorecard/           ← 6-dimension quality scoring
 │       ├── guardrails/          ← 5 rule packs + preventive mode
@@ -421,7 +421,7 @@ loopspec/                            📦 232KB ESM bundle
 
 | Metric | Value |
 |---|---|
-| **Tools** | 47 |
+| **Tools** | 49 |
 | **Tests** | 164 (all passing, ~1.5s) |
 | **Bundle** | 232KB ESM |
 | **Engines** | 21 |
@@ -501,8 +501,8 @@ LoopSpec is shipping this today:
 - [x] Session engine with goals
 - [x] Graph-of-Thought (dependency graph)
 - [x] Model profiler (blind spot tracking)
-- [x] Inverse reasoning (predict)
-- [x] Self-healing specs
+- [x] Pattern prediction (predict)
+- [x] Spec sync (accept/revert drift)
 - [x] Plugin system
 - [x] CLI mode (17 commands)
 - [x] Multi-agent swarm coordinator
