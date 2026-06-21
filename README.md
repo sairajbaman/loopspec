@@ -1,141 +1,244 @@
-# LoopSpec — The Compound Intelligence Engine for AI Development
+# LoopSpec — The Loop Engineering Engine for AI Development
 
 [![CI](https://github.com/sairajbaman/loopspec/actions/workflows/ci.yml/badge.svg)](https://github.com/sairajbaman/loopspec/actions)
 [![npm version](https://img.shields.io/npm/v/loopspec-mcp.svg)](https://www.npmjs.com/package/loopspec-mcp)
 [![npm downloads](https://img.shields.io/npm/dm/loopspec-mcp.svg)](https://www.npmjs.com/package/loopspec-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/sairajbaman/loopspec?style=social)](https://github.com/sairajbaman/loopspec/stargazers)
-[![Last commit](https://img.shields.io/github/last-commit/sairajbaman/loopspec)](https://github.com/sairajbaman/loopspec/commits/master)
 
-> **One idea in. Production-ready AI brain out. Gets smarter every time you ship.**
-> Zero API calls. 125 tests. 42 tools. 225KB. Fully offline.
-
-LoopSpec is an **MCP server + CLI** that makes any AI coding assistant (Claude Code, Cursor, Windsurf, Gemini, Cline, Codebuff) dramatically better by giving it **persistent memory, real-time drift detection, active goal tracking, and a live dependency graph** — without a single external API call.
+> **Stop prompting. Start looping.**
+> The first MCP server that implements Loop Engineering — autonomous agents orchestrating agents, learning every cycle, shipping without you.
+> Zero API calls. 164 tests. 47 tools. 232KB. Fully offline.
 
 ---
 
-## ⭐ Like this project? Star it on GitHub — it helps others find it.
+## The Shift: From Prompting to Loop Engineering
+
+Silicon Valley's top builders (creator of Claude Code, Andrej Karpathy, creator of OpenClaw) are saying the same thing:
+
+> *"You shouldn't be prompting coding agents anymore. You should be designing loops that prompt your agents."*
+
+The engineering stack evolved: **Punch cards → Assembly → High-level languages → Autocomplete → Terminal agents → Loop Engineering.**
+
+Each layer replaces the one before it. LoopSpec is the **first open-source implementation** of this new layer.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  YOU (high-level goal)                                  │
+│    ↓                                                    │
+│  ORCHESTRATOR (spawns & manages sub-loops)              │
+│    ↓                                                    │
+│  SWARM (multiple agents: maker, checker, deployer)      │
+│    ↓                                                    │
+│  DAEMON (autonomous: security, drift, docs, tests)      │
+│    ↓                                                    │
+│  DEPLOY LOOP (build → test → lint → deploy → monitor)  │
+│    ↓                                                    │
+│  COMPOUND (learns, gets smarter, feeds next cycle)      │
+└─────────────────────────────────────────────────────────┘
+```
+
+**You write the loop once. It runs forever. It gets smarter every cycle.**
 
 ---
 
-## The Problem LoopSpec Solves
+## ⭐ Star this repo — it helps other builders find it.
 
-Without LoopSpec, every AI coding session starts fresh — your AI forgets conventions, drifts from specs, repeats mistakes, and ships untested code.
+---
 
-| Without LoopSpec | With LoopSpec |
+## Why LoopSpec Changes How You Code
+
+### Before LoopSpec (Prompting Era)
+```
+You → Write prompt → AI generates code → You review → You prompt again → Repeat
+                                            ↑
+                                     (YOU are the loop)
+```
+You are stuck in the loop. You're the orchestrator, the reviewer, the memory.
+
+### After LoopSpec (Loop Engineering Era)
+```
+You → Define goal → LoopSpec orchestrates → Agents work → Verified → Deployed
+                         ↑                                      │
+                         └──── learns, adapts, repeats ─────────┘
+                                  (LOOP runs itself)
+```
+You define the system. The system runs itself.
+
+---
+
+## What LoopSpec Does (That Nothing Else Can)
+
+| Capability | What It Means |
 |---|---|
-| AI forgets conventions between sessions | **Persistent memory** — learns from every session, never forgets |
-| No drift detection — spec says X, code does Y | **Real-time drift detection** — catches spec violations on every file save |
-| AI loses focus mid-task | **Active goal tracking** — auto-decomposes tasks, verifies progress |
-| Ships untested, un-validated code | **Quality gates** — test enforcement, score tracking, guardrails |
-| Can't see dependency impact | **Graph-of-Thought** — knows what depends on what, shows impact |
-| Repeats same mistakes every session | **Model profiler** — detects AI blind spots, auto-compensates |
-| Spec gets stale as code evolves | **Self-healing specs** — keeps spec in sync with reality |
-
----
-
-## Features
-
-| Category | Features |
-|---|---|
-| **🧠 Memory** | Bayesian learning, cross-project playbook, decision journal, compound patterns |
-| **🎯 Goals** | Auto-decomposition, real-time verification, anti-pattern detection, progress tracking |
-| **🔍 Drift Detection** | 7 categories (auth, UI states, validation, type-safety, API contract, route, conventions) |
-| **📊 Scorecard** | 6 dimensions (spec compliance, accessibility, design match, drift, tests, patterns) |
-| **🛡️ Guardrails** | 5 rule packs (OWASP security, WCAG accessibility, React patterns, performance budget, testing quality) |
-| **🔗 Graph-of-Thought** | File/function/type/component/route nodes, import/reference edges, impact analysis |
-| **📝 Spec Engine** | Idea analysis, hybrid generation (8 docs), stack presets (11 stacks), template customization |
-| **🤖 Model Profiler** | 9 blind spot categories, adaptive checklist, anti-pattern frequency tracking |
-| **⚡ Sandbox** | Isolated JS execution for inline testing |
-| **🔧 Plugin System** | Extensible rules (drift-react, drift-next, drift-vue, security-advanced, testing-enforce) |
-| **🔄 Session Engine** | Start/stop sessions, checkpoints, score delta tracking, progress restore |
-| **🩹 Self-Healing** | Accept/revert/ignore drift, ripple effect analysis, spec auto-update |
-| **🔮 Inverse Reasoning** | Predict expected code before writing, compare after for gaps |
+| **🐝 Swarm Coordinator** | Multiple AI agents working in parallel/pipeline — one plans, one builds, one reviews, one deploys |
+| **🤖 Autonomous Daemon** | Background loop that runs security scans, drift checks, docs updates, test runs — on schedule, no human needed |
+| **🚀 Auto-Deploy Pipeline** | Full CI/CD: build → test → lint → security → deploy → verify → monitor. Auto-rollback on failure |
+| **🔄 Cross-Agent Orchestrator** | Loops that spawn sub-loops. A tree of autonomous work. "Build a SaaS" spawns "design DB" + "build API" + "build UI" loops |
+| **🧠 Persistent Memory** | Bayesian learning that compounds across sessions. Your AI never forgets conventions |
+| **🎯 Prompt Amplifier** | Turns vague prompts into structured, research-backed instructions with thinking frames and success criteria |
+| **🔍 Real-time Drift Detection** | 7 categories of drift caught live. Spec says X, code does Y? Caught instantly |
+| **📊 Quality Scorecard** | 6-dimension scoring on every checkpoint. No more "it looks fine" |
+| **🔮 Inverse Reasoning** | Predicts what code SHOULD look like before writing. Catches missing patterns |
+| **🔗 Dependency Graph** | Knows what depends on what. Change a type? Shows you all 12 files that need updating |
+| **🧪 Self-Healing Specs** | When code drifts from spec, choose: update the spec or fix the code. Ripple analysis included |
+| **🎓 Model Profiler** | Tracks your AI's blind spots (accessibility? loading states?) and auto-compensates |
 
 ---
 
 ## Quick Start (30 seconds)
 
-### One Command Setup (auto-detects your AI tool)
-
 ```bash
 npx loopspec-mcp setup
 ```
 
-Auto-detects Cursor, VS Code, Windsurf, Claude Code, Kiro, Gemini, Codebuff — configures all of them.
+Auto-detects Claude Code, Cursor, Windsurf, Kiro, VS Code, Gemini, Codebuff — configures all of them.
 
-### Or One-Liner for Your Specific Tool
+### Or manual one-liner:
 
 ```bash
 # Claude Code
 claude mcp add loopspec -- npx -y loopspec-mcp
 
-# Cursor — paste in .cursor/mcp.json
+# Cursor — .cursor/mcp.json
 {"mcpServers":{"loopspec":{"command":"npx","args":["-y","loopspec-mcp"]}}}
 
-# Kiro — paste in .kiro/settings/mcp.json
+# Kiro — .kiro/settings/mcp.json
 {"mcpServers":{"loopspec":{"command":"npx","args":["-y","loopspec-mcp"]}}}
 
-# Windows (any tool) — use cmd wrapper
+# Windows (any tool)
 {"mcpServers":{"loopspec":{"command":"cmd","args":["/c","npx","-y","loopspec-mcp"]}}}
-
-# Windsurf — paste in .codeium/windsurf.json
-{"mcpServers":{"loopspec":{"command":"npx","args":["-y","loopspec-mcp"]}}}
 ```
 
-### Initialize a Project
+### First Use
 
-Tell your AI: **"use loopspec"** or:
-
-```
-Use loopspec_init with idea: "I want to build an app where freelancers track invoices"
-```
-
-LoopSpec generates 8 spec documents (PRD, TRD, AppFlow, Schema, Plan, SKILL, UIBrief, DesignSystem) from your idea in seconds.
+Tell your AI: **"use loopspec"** — it self-bootstraps. Zero config needed.
 
 ---
 
-## How It Works
+## The Loop Engineering Workflow
 
 ```
 STATUS → SESSION → PREFLIGHT → CONTEXT → WORK → CHECKPOINT → COMPOUND → REPEAT
   ↑                                                                │
-  └──────────── system gets smarter every cycle ───────────────────┘
+  └──────── system gets smarter every cycle ───────────────────────┘
 ```
 
 Every session:
-1. **`loopspec_status`** — AI learns how to use LoopSpec (self-bootstrapping, zero config)
+1. **`loopspec_status`** — AI learns how to use LoopSpec (self-bootstrapping)
 2. **`loopspec_session start`** — creates goal checklist from spec
-3. **`loopspec_preflight`** — injects constraints before coding
-4. **`loopspec_context`** — routes only relevant spec sections (saves tokens)
-5. **AI writes code** — your AI tool of choice (Claude, GPT, Gemini, etc.)
+3. **`loopspec_amplify`** — transforms vague prompts into structured instructions
+4. **`loopspec_preflight`** — injects constraints before coding
+5. **AI writes code** — with guardrails active
 6. **`loopspec_checkpoint`** — scores, checks tests, updates goals
 7. **`loopspec_compound`** — extracts patterns for future sessions
 
----
-
-## Use Cases
-
-### Solo Developer Building an MVP
-You tell Claude Code "use loopspec". It generates specs, tracks goals, catches drift. You ship in days, not weeks. Your AI remembers everything across sessions.
-
-### Team Using Multiple AI Tools
-Frontend team uses Cursor, backend uses Claude Code. LoopSpec synchronizes specs, conventions, and quality gates across both. **The AI brain outlasts any single model.**
-
-### AI-Powered Code Review
-`loopspec_review` scores every PR against spec compliance, accessibility, design match, and test coverage. No more manual "you forgot X" comments.
-
-### Freelancer Shipping Production Apps
-Start with a one-sentence idea → get complete spec → build with AI that never forgets conventions → verify with drift detection → ship with confidence.
+**For autonomous work:**
+- **`loopspec_daemon enable`** → scheduled loops run without you
+- **`loopspec_swarm init`** → multiple agents tackle sub-tasks in parallel
+- **`loopspec_deploy start`** → full pipeline from code to production
+- **`loopspec_orchestrate create`** → loops that spawn and manage sub-loops
 
 ---
 
-## 42 Tools Reference
+## Real Examples
 
-### Orientation (call first)
+### 1. Prompt Amplifier — Makes Any Prompt 10x Better
+
+**Input:** `"add stripe payments"`
+
+**Output (auto-generated):**
+```
+## TASK
+add stripe payments
+
+## THINK STEP-BY-STEP
+1. Understand EXACTLY what is being asked — restate the goal
+2. Identify all pieces needed (files, functions, types, imports)
+3. Determine the correct ORDER (dependencies first)
+4. For each piece: edge cases, error states, validation
+5. Before writing: "What could go wrong? What am I forgetting?"
+
+## CONSTRAINTS
+- OWASP: validate all inputs, no secrets in client code
+- Always handle webhook signature verification
+
+## AVOID THESE (learned from past sessions)
+• Using parsed body instead of raw body for webhooks
+• Missing idempotency key for retried events
+• ⚠️ You tend to miss: Error handling (60% miss rate)
+
+## SUCCESS CRITERIA
+- [ ] Directly solves what was asked
+- [ ] Input validated
+- [ ] Auth/permissions checked
+- [ ] Handles error/edge cases
+- [ ] Code is complete and runnable
+```
+
+No more vague prompts. The AI thinks clearly because it gets structured constraints.
+
+### 2. Multi-Agent Swarm — Build an App Without Touching the Keyboard
+
+```bash
+loopspec swarm init "build invoice tracking app"
+# ✓ Swarm initialized: swarm_1750491234
+#   Strategy: pipeline
+
+loopspec swarm add --swarm swarm_1750491234 --role planner --id plan-agent
+loopspec swarm add --swarm swarm_1750491234 --role maker --id build-agent
+loopspec swarm add --swarm swarm_1750491234 --role checker --id review-agent
+loopspec swarm add --swarm swarm_1750491234 --role deployer --id deploy-agent
+
+loopspec swarm next swarm_1750491234
+# Next actions (1):
+#   • plan-agent: execute → design the schema and plan tasks
+```
+
+Each agent gets the output from the previous one. Pipeline flows automatically.
+
+### 3. Autonomous Daemon — Never Forget Security Again
+
+```bash
+loopspec daemon enable
+loopspec daemon tick
+# Triggered 3 tasks:
+#   • Security Scan (security-scan)
+#   • Drift Check (drift-check)
+#   • Compound Learn (compound-learn)
+```
+
+Runs daily. Catches security issues, spec drift, and extracts learnings — without you doing anything.
+
+### 4. Deploy Loop — Code to Production in One Command
+
+```bash
+loopspec deploy start --env staging
+# ✓ Deploy started: deploy_1750491234
+#   Stages: build → test → lint → security → deploy → verify → monitor
+```
+
+Fails at lint? Remaining stages skipped. Verify fails in production? Auto-rollback. Human approval required for prod.
+
+### 5. Cross-Agent Orchestrator — Loops Spawning Loops
+
+```bash
+loopspec orchestrate create "ship a new SaaS every week"
+# ✓ Plan: orch_1750491234
+#   Root loop → spawns: ideation, design, build, deploy, marketing
+```
+
+The orchestrator spawns sub-loops (max depth 3, max 10 loops). Each sub-loop can spawn its own children. A tree of autonomous work.
+
+---
+
+## 47 Tools Reference
+
+### Orientation
 | Tool | Purpose |
 |---|---|
-| `loopspec_status` | Returns project state, goals, and workflow guidance — self-bootstrapping |
+| `loopspec_status` | Project state + workflow guidance (self-bootstrapping) |
+| `loopspec_amplify` | **NEW** — Transforms any prompt into structured, research-backed instructions |
 
 ### Session & Goals
 | Tool | Purpose |
@@ -143,297 +246,173 @@ Start with a one-sentence idea → get complete spec → build with AI that neve
 | `loopspec_session` | Start/end tracked sessions with progress restore |
 | `loopspec_goal` | Create/check/update active goal checklists |
 | `loopspec_checkpoint` | Score + test gate + goal progress (all-in-one) |
-| `loopspec_decision` | Log decisions with rationale (persists across sessions) |
+| `loopspec_decision` | Log decisions with rationale |
 
-### Core Spec
+### Loop Engineering (Autonomous)
 | Tool | Purpose |
 |---|---|
-| `loopspec_init` | Generate specs from idea |
-| `loopspec_vibe` | Quick setup (auto-fills defaults) |
-| `loopspec_context` | Route task-relevant context (saves tokens) |
-| `loopspec_plan` | Break into subtasks |
-| `loopspec_design` | Design system generation (31 palettes, 21 fonts) |
-| `loopspec_detect` | Auto-generate SKILL.md from existing repo |
-
-### Quality & Guardrails
-| Tool | Purpose |
-|---|---|
-| `loopspec_preflight` | Inject constraints before work |
-| `loopspec_guardrails_add` | Install rule packs (security, a11y, perf, etc.) |
-| `loopspec_drift` | Check file for spec drift (7 categories) |
-| `loopspec_watch` | Scan recent changes for drift (real-time) |
-| `loopspec_score` | Quality scorecard (6 dimensions) |
-| `loopspec_verify` | Adversarial code review |
-| `loopspec_typecheck` | TypeScript type checking integration |
-
-### Neural Intelligence (v2.0)
-| Tool | Purpose |
-|---|---|
-| `loopspec_graph` | Build dependency graph + impact analysis |
-| `loopspec_profile` | View/update model blind-spot profile |
-| `loopspec_autocomplete` | Get spec-derived code snippets |
-| `loopspec_heal` | Accept or revert drift (self-healing specs) |
-| `loopspec_contracts` | Verify frontend/backend API match |
-| `loopspec_guidance` | Smart help when stuck (spec + playbook + common mistakes) |
-| `loopspec_predict` | Inverse reasoning — predict code before writing, compare after |
-
-### Learning & Memory
-| Tool | Purpose |
-|---|---|
-| `loopspec_compound` | Extract patterns from work (Bayesian NLP) |
-| `loopspec_playbook` | Search past learnings across projects |
-| `loopspec_feedback` | Record quality signals |
-| `loopspec_infer` | Predict best approach (multi-signal weighted) |
-
-### Loop Engineering
-| Tool | Purpose |
-|---|---|
-| `loopspec_maker_prompt` | Optimized builder prompt with spec context + guardrails |
+| `loopspec_swarm` | Multi-agent swarm (parallel, pipeline, fan-out-fan-in, round-robin) |
+| `loopspec_daemon` | Autonomous background loop — scheduled security, drift, docs, tests |
+| `loopspec_deploy` | Auto-deploy: build → test → lint → security → deploy → verify → monitor |
+| `loopspec_orchestrate` | Cross-agent orchestrator — loops that spawn and manage sub-loops |
+| `loopspec_maker_prompt` | Optimized builder prompt with spec context |
 | `loopspec_checker_prompt` | Adversarial reviewer prompt |
 | `loopspec_retry` | Smart retry with error context |
 | `loopspec_escalate` | Flag for human review |
 | `loopspec_decompose` | Split into parallel tasks |
 | `loopspec_merge_review` | Reconcile parallel outputs |
 
+### Core Spec
+| Tool | Purpose |
+|---|---|
+| `loopspec_init` | Generate 8 spec documents from one idea |
+| `loopspec_vibe` | Quick setup (auto-fills defaults) |
+| `loopspec_context` | Route task-relevant context (saves tokens) |
+| `loopspec_plan` | Break into subtasks |
+| `loopspec_design` | Design system (31 palettes, 21 fonts) |
+| `loopspec_detect` | Auto-generate SKILL.md from existing repo |
+
+### Quality & Guardrails
+| Tool | Purpose |
+|---|---|
+| `loopspec_preflight` | Inject constraints before work |
+| `loopspec_guardrails_add` | Install rule packs (security, a11y, perf) |
+| `loopspec_drift` | Check file for spec drift (7 categories) |
+| `loopspec_watch` | Real-time file monitoring |
+| `loopspec_score` | Quality scorecard (6 dimensions) |
+| `loopspec_verify` | Adversarial code review |
+| `loopspec_typecheck` | TypeScript type checking |
+
+### Neural Intelligence
+| Tool | Purpose |
+|---|---|
+| `loopspec_graph` | Dependency graph + impact analysis |
+| `loopspec_profile` | Model blind-spot tracking |
+| `loopspec_autocomplete` | Spec-derived code snippets |
+| `loopspec_heal` | Self-healing specs (accept/revert drift) |
+| `loopspec_contracts` | Frontend/backend API match |
+| `loopspec_guidance` | Smart help when stuck |
+| `loopspec_predict` | Inverse reasoning — predict before write |
+
+### Learning & Memory
+| Tool | Purpose |
+|---|---|
+| `loopspec_compound` | Extract patterns (Bayesian NLP) |
+| `loopspec_playbook` | Search past learnings across projects |
+| `loopspec_feedback` | Record quality signals |
+| `loopspec_infer` | Predict best approach |
+
 ### Extensibility
 | Tool | Purpose |
 |---|---|
-| `loopspec_plugin` | Install/remove/list plugins (drift-react, etc.) |
-| `loopspec_sandbox` | Execute JS snippets in isolated VM |
-| `loopspec_template` | Customize doc generation (skip/add/replace sections) |
-| `loopspec_enforce` | Add pre-commit or CI enforcement hooks |
-| `loopspec_suggest` | Get implementation suggestions from spec + playbook |
+| `loopspec_plugin` | Install/remove plugins |
+| `loopspec_sandbox` | Execute JS in isolated VM |
+| `loopspec_template` | Customize doc generation |
+| `loopspec_enforce` | Pre-commit/CI hooks |
+| `loopspec_suggest` | Implementation suggestions |
 
 ---
 
 ## CLI Mode
 
-LoopSpec works standalone from your terminal — no AI tool required:
-
 ```bash
+# Loop Engineering
+loopspec swarm init "build e-commerce"     # Multi-agent swarm
+loopspec swarm status                       # Agent states
+loopspec daemon enable                      # Start autonomous loop
+loopspec daemon tick                        # Trigger due tasks
+loopspec deploy start --env staging         # Full deploy pipeline
+loopspec orchestrate create "ship weekly"   # Loop-of-loops
+
 # Sessions
-loopspec session start "add payments"   # → Auto-decomposes into 11 goals
-loopspec session status                  # → Goals, score, files changed
-loopspec session end                     # → Report with score delta
+loopspec session start "add payments"
+loopspec session status
+loopspec session end
 
 # Analysis
-loopspec check src/app/page.tsx          # → Drift + guardrails + score
-loopspec watch --continuous              # → Real-time file monitoring
-loopspec watch --continuous --tui        # → Dashboard mode
-loopspec review --pr main                # → Score all changed files
+loopspec check src/app/page.tsx
+loopspec watch --continuous
+loopspec review --pr main
 
 # Intelligence
-loopspec graph build                     # → Map all dependencies
-loopspec graph impact "src/types.ts"     # → "affects 12 files"
-loopspec graph query "payment"           # → Search graph
-loopspec suggest "stripe webhook"        # → Common mistakes + spec context
-loopspec predict "payment form"          # → Inverse reasoning
-
-# Tools
-loopspec profile                         # → Blind spot visualization
-loopspec plugin install drift-react      # → Add React-specific rules
-loopspec connect --status                # → Show configured AI tools
+loopspec graph build
+loopspec graph impact "src/types.ts"
+loopspec predict "payment form"
+loopspec suggest "stripe webhook"
+loopspec profile
 ```
 
 ---
 
-## What Makes LoopSpec Different
+## Why Engineers Are Switching to LoopSpec
 
-| Feature | LoopSpec | Raw AI (Claude/GPT/Gemini) | Other MCP Servers |
+| Without LoopSpec | With LoopSpec |
+|---|---|
+| You ARE the loop (prompt → review → repeat) | Loops run themselves, you define the system |
+| AI forgets everything between sessions | Persistent memory — compounds every session |
+| No drift detection | 7 categories caught in real-time |
+| Ship and pray | Deploy loop: build → test → verify → monitor → auto-rollback |
+| One agent, one task | Swarm: multiple agents, parallel strategies |
+| Manual security reviews | Daemon runs scans daily without you |
+| Vague prompts, mediocre output | Amplifier turns prompts into structured instructions |
+| AI repeats same mistakes | Profiler detects blind spots, auto-compensates |
+
+---
+
+## How It Compares
+
+| Feature | LoopSpec | Raw AI | Other MCP Servers |
 |---|---|---|---|
-| Persistent memory | ✅ Bayesian learning | ❌ Forgets every session | ❌ Most are stateless |
-| Drift detection | ✅ 7 categories, real-time | ❌ Manual review | ❌ Rare |
-| Goal tracking | ✅ Auto-decompose + verify | ❌ None | ❌ None |
-| Dependency graph | ✅ 340+ node graph | ❌ Can't see structure | ❌ None |
-| Model profiler | ✅ 9 blind spots | ❌ None | ❌ None |
-| Quality scorecard | ✅ 6 dimensions | ❌ None | ❌ None |
-| Works offline | ✅ Yes | ✅ Yes | ❌ Most need APIs |
+| Loop Engineering (swarm, daemon, deploy) | ✅ Full | ❌ | ❌ |
+| Autonomous background loops | ✅ | ❌ | ❌ |
+| Cross-agent orchestration | ✅ | ❌ | ❌ |
+| Auto-deploy with rollback | ✅ | ❌ | ❌ |
+| Prompt amplification | ✅ | ❌ | ❌ |
+| Persistent memory | ✅ | ❌ | ❌ Rare |
+| Drift detection | ✅ 7 categories | ❌ | ❌ |
+| Dependency graph | ✅ 340+ nodes | ❌ | ❌ |
+| Model profiler | ✅ 9 blind spots | ❌ | ❌ |
+| Works offline | ✅ | ✅ | ❌ Most need APIs |
 | LLM API calls | **Zero** | N/A | ❌ Most call LLMs |
-| Bundle size | **225KB** | N/A | Varies |
-| Tests | **125** | N/A | Usually < 20 |
-| Stack presets | **11 stacks** | ❌ None | ❌ Rare |
-
----
-
-## Graph-of-Thought
-
-LoopSpec builds a live dependency graph of your project:
-
-```
-$ loopspec graph build
-✓ Graph built: 340 nodes, 338 edges
-  Files: 103 | Functions: 175 | Types: 57 | Components: 5 | Routes: 0
-
-$ loopspec graph impact "src/context.ts"
-src/context.ts affects 49 file(s):
-  • src/engines/session/index.ts (references)
-  • src/engines/graph/index.ts (references)
-  • src/tools/session-tool.ts (references)
-
-$ loopspec graph query "payment"
-  • [type] PaymentMethod (src/payments/types.ts)
-  • [function] processPayment (src/payments/handler.ts:42)
-  • [file] payment-form.tsx (src/components/payments/)
-```
-
-When you change a type, LoopSpec tells you exactly what else needs updating — no more "I forgot to update X".
-
----
-
-## Model Profiler
-
-Tracks what your AI forgets most and auto-compensates:
-
-```
-$ loopspec profile
-
-  Sessions: 12 | Updated: 2026-06-18
-
-  █████░░░░░ 50% Loading states (5✓ 5✗)
-  ██░░░░░░░░ 20% Accessibility (2✓ 8✗)
-  ████████░░ 80% Error handling (8✓ 2✗)
-  ⛔ STOP using: any types (10 occurrences recorded)
-
-  Adaptive checklist (auto-injected into preflight):
-  ⚠ ALWAYS include: Accessibility (you miss this 80% of the time)
-  ⚠ ALWAYS include: Loading states (you miss this 50% of the time)
-```
-
-The profiler learns your specific AI model's weak points and automatically adjusts guardrails. Next session, your AI will be reminded before it makes the same mistakes.
-
----
-
-## Inverse Reasoning (Predict)
-
-Before your AI writes code, LoopSpec predicts what it **should** write:
-
-```
-$ loopspec predict "stripe webhook handler"
-
-  Before coding, these are expected:
-  ○ Signature verification
-  ○ Idempotency/duplicate check
-  ○ Event type routing
-  ○ Quick 200 response
-  ○ Async processing (don't block)
-
-$ loopspec predict compare --files webhook.ts
-
-  Completeness: 40/100
-  ✓ Signature verification (100%)
-  ✗ Idempotency/duplicate check (0%) ← MISSING
-  ✗ Event type routing (0%)          ← MISSING
-  ✓ Quick 200 response (100%)
-  ✗ Async processing (0%)            ← MISSING
-```
-
-Catches missing patterns **before** they become bugs. No AI call needed — pure structural analysis.
-
----
-
-## Plugin System
-
-```bash
-loopspec plugin list
-# Available: drift-react, drift-next, drift-vue, security-advanced, testing-enforce
-
-loopspec plugin install drift-react
-# ✓ Installed: 3 rules (no-index-key, useEffect-deps, no-nested-components)
-
-loopspec plugin install security-advanced
-# ✓ Installed: 5 rules (CORS, CSP, SQL injection, XSS, SSRF)
-```
-
----
-
-## Self-Bootstrapping Pattern
-
-LoopSpec teaches your AI how to use it — **zero configuration needed**:
-
-1. AI calls `loopspec_status` (zero params)
-2. Gets back: project state + workflow instructions + adaptive checklist
-3. Automatically follows the preflight → context → checkpoint loop
-4. Each session makes the next session better
-
-The AI's response includes a persistence hint:
-
-> *"Add to your CLAUDE.md: Always call loopspec_status first. Follow the LoopSpec workflow."*
-
-Once persisted, the behavior survives across all future sessions.
-
----
-
-## Supported AI Tools
-
-| Tool | Config File | Status |
-|---|---|---|
-| **Claude Code** | .mcp.json | ✅ Auto-detected |
-| **Cursor** | .cursor/mcp.json | ✅ Auto-detected |
-| **Windsurf** | .codeium/windsurf/mcp_config.json | ✅ Auto-detected |
-| **Gemini CLI** | gemini-extension.json | ✅ Manual (PATH) |
-| **Kiro** | .kiro/settings/mcp.json | ✅ Auto-detected |
-| **Amazon Q** | ~/.aws/amazonq/mcp.json | ✅ Auto-detected |
-| **VS Code** | .vscode/mcp.json | ✅ Auto-detected |
-| **Codebuff** | codebuff_config.json | ✅ Auto-detected |
-| **Cline** | cline_mcp_settings.json | ✅ Auto-detected |
-| **Continue** | .continue/config.json | ✅ Auto-detected |
-
----
-
-## Supported Stacks (11 Stack DNA Presets)
-
-| Stack | Convention Rules | Anti-Patterns |
-|---|---|---|
-| Next.js + Supabase + shadcn | ✅ Detailed | ✅ 8 anti-patterns |
-| T3 Stack (tRPC, Prisma, NextAuth) | ✅ Detailed | ✅ 6 anti-patterns |
-| React Native + Expo | ✅ Detailed | ✅ 5 anti-patterns |
-| Python + FastAPI | ✅ Detailed | ✅ 5 anti-patterns |
-| Vue + Nuxt + Pinia | ✅ Detailed | ✅ 5 anti-patterns |
-| SvelteKit + Drizzle | ✅ Detailed | ✅ 5 anti-patterns |
-| Flutter + Firebase | ✅ Detailed | ✅ 5 anti-patterns |
-| Django + HTMX | ✅ Detailed | ✅ 5 anti-patterns |
-| Go + Fiber | ✅ Detailed | ✅ 5 anti-patterns |
-| Rust + Axum | ✅ Detailed | ✅ 5 anti-patterns |
-| Spring Boot | ✅ Detailed | ✅ 5 anti-patterns |
+| Bundle size | **232KB** | N/A | Varies |
+| Tests | **164** | N/A | Usually < 20 |
 
 ---
 
 ## Architecture
 
 ```
-loopspec/                          📦 225KB ESM bundle
+loopspec/                            📦 232KB ESM bundle
 ├── src/
-│   ├── server.ts              ← MCP server entry (42 tools)
-│   ├── cli/                   ← CLI entry + 9 commands
-│   ├── tools/                 ← 42 MCP tool handlers
-│   └── engines/               ← Core intelligence (15 engines)
-│       ├── session/           ← Session lifecycle + restore (305 lines)
-│       ├── goals/             ← Goal decomposition + verification
-│       ├── graph/             ← Dependency graph + impact analysis (160 lines)
-│       ├── profiler/          ← Blind spot tracking (9 categories)
-│       ├── predict/           ← Inverse reasoning (155 lines, 7 task categories)
-│       ├── autocomplete/      ← Spec-derived code injection
-│       ├── self-heal/         ← Drift accept/revert with ripple analysis
-│       ├── contracts/         ← API contract verification
-│       ├── plugins/           ← Extensible rule system (5 available)
-│       ├── sandbox/           ← Isolated JS execution
-│       ├── watcher/           ← chokidar file watcher
-│       ├── test-gate/         ← Test enforcement (3 patterns, smart suggestions)
-│       ├── decisions/         ← Decision log (SQLite + markdown)
-│       ├── guidance/          ← Smart help (spec + playbook + mistakes DB)
-│       ├── guardrails/        ← 5 rule packs + preventive mode
-│       ├── live-sync/         ← Drift detection (7 categories)
-│       ├── scorecard/         ← 6-dimension quality scoring (339 lines)
-│       ├── memory/            ← Bayesian learning + cross-project playbook
-│       ├── context-router/    ← Task-relevant routing (token budget)
-│       ├── design-engine/     ← 31 palettes, 21 fonts, 16 styles
-│       └── spec-engine/       ← Multi-signal analyzer + 8 templates
+│   ├── server.ts                ← MCP server (47 tools)
+│   ├── cli/                     ← CLI (17 commands)
+│   ├── tools/                   ← 47 MCP tool handlers
+│   └── engines/                 ← 21 intelligence engines
+│       ├── swarm/               ← Multi-agent orchestration (4 strategies)
+│       ├── daemon/              ← Autonomous scheduled loops
+│       ├── deploy-loop/         ← CI/CD pipeline (7 stages)
+│       ├── orchestrator/        ← Cross-agent loop tree
+│       ├── prompt-amplifier/    ← Prompt research + structuring
+│       ├── session/             ← Session lifecycle + restore
+│       ├── goals/               ← Goal decomposition + verification
+│       ├── graph/               ← Dependency graph + impact analysis
+│       ├── profiler/            ← Blind spot tracking (9 categories)
+│       ├── predict/             ← Inverse reasoning
+│       ├── self-heal/           ← Drift accept/revert + ripple analysis
+│       ├── memory/              ← Bayesian learning + cross-project playbook
+│       ├── live-sync/           ← Drift detection (7 categories)
+│       ├── scorecard/           ← 6-dimension quality scoring
+│       ├── guardrails/          ← 5 rule packs + preventive mode
+│       ├── context-router/      ← Task-relevant routing (token budget)
+│       ├── contracts/           ← API contract verification
+│       ├── plugins/             ← Extensible rule system
+│       ├── sandbox/             ← Isolated JS execution
+│       ├── guidance/            ← Smart help (spec + playbook)
+│       └── spec-engine/         ← Multi-signal analyzer + 8 templates
 ├── data/
-│   ├── guardrails/            ← 5 YAML rule packs
-│   └── stacks/                ← 11 stack DNA presets
-├── server.json                ← Smithery registry
-├── gemini-extension.json      ← Gemini CLI discovery
-└── tests/                     ← 125 tests, 10 suites
+│   ├── guardrails/              ← 5 YAML rule packs
+│   └── stacks/                  ← 11 stack DNA presets
+└── tests/                       ← 164 tests, 14 suites
 ```
 
 ---
@@ -442,20 +421,44 @@ loopspec/                          📦 225KB ESM bundle
 
 | Metric | Value |
 |---|---|
-| **Tools** | 42 |
-| **Tests** | 125 (all passing, ~900ms) |
-| **Bundle size** | 225KB ESM |
-| **Engines** | 15 intelligence engines |
+| **Tools** | 47 |
+| **Tests** | 164 (all passing, ~1.5s) |
+| **Bundle** | 232KB ESM |
+| **Engines** | 21 |
 | **Stack presets** | 11 |
 | **Guardrail rules** | 40+ |
 | **Drift categories** | 7 |
+| **Swarm strategies** | 4 (parallel, pipeline, fan-out-fan-in, round-robin) |
+| **Deploy stages** | 7 (build, test, lint, security, deploy, verify, monitor) |
 | **Scorecard dimensions** | 6 |
 | **Blind spot categories** | 9 |
-| **Plugin packs** | 5 |
 | **API calls** | **Zero** (fully offline) |
-| **File watcher** | chokidar (real-time) |
-| **Storage** | SQLite + JSON + Markdown |
-| **Dependencies** | 6 runtime (minimal) |
+| **Dependencies** | 6 runtime |
+
+---
+
+## Supported AI Tools
+
+| Tool | Status |
+|---|---|
+| Claude Code | ✅ Auto-detected |
+| Cursor | ✅ Auto-detected |
+| Windsurf | ✅ Auto-detected |
+| Kiro | ✅ Auto-detected |
+| VS Code | ✅ Auto-detected |
+| Gemini CLI | ✅ Manual |
+| Amazon Q | ✅ Auto-detected |
+| Codebuff | ✅ Auto-detected |
+| Cline | ✅ Auto-detected |
+| Continue | ✅ Auto-detected |
+
+---
+
+## Supported Stacks (11 Presets)
+
+Next.js + Supabase + shadcn • T3 Stack • React Native + Expo • Python + FastAPI • Vue + Nuxt • SvelteKit + Drizzle • Flutter + Firebase • Django + HTMX • Go + Fiber • Rust + Axum • Spring Boot
+
+Each preset includes convention rules and anti-patterns.
 
 ---
 
@@ -464,54 +467,35 @@ loopspec/                          📦 225KB ESM bundle
 ```bash
 git clone https://github.com/sairajbaman/loopspec.git
 cd loopspec
-npm install          # Install dependencies
-npm run build        # tsup → 225KB ESM bundle
-npm test             # 125 tests, ~900ms
-npx tsc --noEmit     # Type check (strict mode)
+npm install
+npm run build        # → 232KB ESM bundle
+npm test             # → 164 tests, ~1.5s
 npm run dev          # Watch mode
 ```
 
 ---
 
-## FAQ
+## The Future Is Loops
 
-**Q: Does LoopSpec call any LLM APIs?**
-No. All intelligence is structural/heuristic. Zero network calls. Everything runs locally. This means **zero cost, zero latency, zero data leaving your machine.**
+The engineering world moved from punch cards to assembly to Python to autocomplete to terminal agents. The next layer is **Loop Engineering** — systems that orchestrate systems.
 
-**Q: How do I use it?**
-Just say "use loopspec" in your AI tool. Or call `loopspec_status` — it teaches the AI everything. No config files to write.
+LoopSpec is shipping this today:
+- **Swarm** — multiple agents, coordinated strategies
+- **Daemon** — autonomous background work
+- **Deploy** — full pipeline with auto-rollback
+- **Orchestrator** — loops spawning loops (loop tree)
+- **Amplifier** — makes every prompt dramatically better
+- **Memory** — compounds and learns across every session
 
-**Q: What's the token overhead?**
-~2-4K tokens per task. Context is routed (not dumped), with a 15K token budget. Compare to dumping entire specs (50K+).
-
-**Q: Does it work on Windows?**
-Yes. Auto-detects Windows and writes `cmd /c npx` config. Zero manual fixup needed.
-
-> **PowerShell note:** Windows PowerShell 5.1 does not support `&&`. Use `;` to chain commands:
-> ```powershell
-> cd "my-project" ; npx loopspec-mcp status
-> ```
-> Or use PowerShell 7+ (`pwsh`) which supports `&&`.
-
-**Q: Can I use it with existing projects?**
-Yes. Use `loopspec_detect` to auto-generate SKILL.md from your existing codebase.
-
-**Q: Does it work offline?**
-Yes. No network calls. Everything runs locally via MCP stdio.
-
-**Q: What AI tools are supported?**
-Claude Code, Cursor, Windsurf, Gemini CLI, Kiro, Codebuff, VS Code, Cline, Continue — any MCP-compatible tool.
-
-**Q: How is this different from just using prompt engineering?**
-Prompt engineering is ephemeral — it lasts one message. LoopSpec persists across sessions, learns from outcomes, and catches drift that prompts can't prevent.
+**Your job is no longer to prompt an AI. Your job is to design the loops that prompt the AI.**
 
 ---
 
 ## Roadmap
 
-- [x] Spec engine with 8 hybrid documents
+- [x] 8 hybrid spec documents from one idea
 - [x] Context router with token budgets
-- [x] Drift detection (7 categories)
+- [x] Drift detection (7 categories, real-time)
 - [x] Quality scorecard (6 dimensions)
 - [x] Guardrails (5 rule packs)
 - [x] Session engine with goals
@@ -520,31 +504,28 @@ Prompt engineering is ephemeral — it lasts one message. LoopSpec persists acro
 - [x] Inverse reasoning (predict)
 - [x] Self-healing specs
 - [x] Plugin system
-- [x] CLI mode
-- [x] Live sandbox
-- [x] API contract verification
-- [ ] Swarm coordinator (multi-model orchestration)
+- [x] CLI mode (17 commands)
+- [x] Multi-agent swarm coordinator
+- [x] Autonomous daemon loops
+- [x] Auto-deploy pipeline
+- [x] Cross-agent orchestrator (loop tree)
+- [x] Prompt amplifier
 - [ ] TUI dashboard
 - [ ] VS Code extension
 - [ ] GitHub Actions integration
-
----
-
-## Star History
-
-If LoopSpec saves you time, **[star it on GitHub](https://github.com/sairajbaman/loopspec)** ⭐ — it helps other developers find it.
+- [ ] Persistent daemon process (cron-based)
 
 ---
 
 ## License
 
-MIT. Use it freely in personal and commercial projects.
+MIT. Use freely in personal and commercial projects.
 
 ---
 
 <p align="center">
-  Built with ❤️ for developers who ship with AI.
-  <br>
+  <strong>Stop prompting. Start looping.</strong>
+  <br><br>
   <a href="https://github.com/sairajbaman/loopspec/issues">Report Issue</a> ·
   <a href="https://github.com/sairajbaman/loopspec/discussions">Discussion</a> ·
   <a href="https://www.npmjs.com/package/loopspec-mcp">npm</a>

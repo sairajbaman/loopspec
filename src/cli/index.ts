@@ -55,6 +55,25 @@ Commands:
   session end            End session with report
   session history        List past sessions
 
+  swarm init "<goal>"    Initialize a multi-agent swarm
+  swarm add --swarm <id> Add an agent to the swarm
+  swarm next <id>        Get next actions for the swarm
+  swarm status [id]      Show swarm status
+
+  daemon init            Initialize the autonomous daemon
+  daemon enable          Enable scheduled background tasks
+  daemon disable         Disable daemon
+  daemon tick            Manually trigger due tasks
+  daemon status          Show daemon state and history
+
+  deploy init            Configure deployment pipeline
+  deploy start           Start a deploy run
+  deploy status [id]     Show deployment status
+
+  orchestrate create "<goal>"  Create a cross-agent loop plan
+  orchestrate next <id>  Show next loops to execute
+  orchestrate status [id] Show plan status
+
   check <file>           One-shot analysis (drift + guardrails + score)
   watch [--continuous]   Watch files for drift (--tui for dashboard)
   review [--pr <base>]   Review changed files against spec
@@ -175,6 +194,26 @@ export async function main() {
     case 'session':
       await runSession(parsed);
       break;
+    case 'swarm': {
+      const { runSwarmCommand } = await import('./commands/swarm.js');
+      await runSwarmCommand(parsed.positional, parsed.flags);
+      break;
+    }
+    case 'daemon': {
+      const { runDaemonCommand } = await import('./commands/daemon.js');
+      await runDaemonCommand(parsed.positional, parsed.flags);
+      break;
+    }
+    case 'deploy': {
+      const { runDeployCommand } = await import('./commands/deploy.js');
+      await runDeployCommand(parsed.positional, parsed.flags);
+      break;
+    }
+    case 'orchestrate': {
+      const { runOrchestrateCommand } = await import('./commands/orchestrate.js');
+      await runOrchestrateCommand(parsed.positional, parsed.flags);
+      break;
+    }
     case 'check':
       await runCheck(parsed);
       break;

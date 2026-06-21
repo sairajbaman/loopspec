@@ -47,6 +47,13 @@ import {
 } from './neural-tools.js';
 import { registerPredictTool } from './predict-tool.js';
 
+// v2.2 Loop Engineering engines
+import { registerSwarmTool } from './swarm-tool.js';
+import { registerDaemonTool } from './daemon-tool.js';
+import { registerDeployLoopTool } from './deploy-tool.js';
+import { registerOrchestrateTool } from './orchestrate-tool.js';
+import { registerAmplifyTool } from './amplify-tool.js';
+
 export function registerAllTools(server: McpServer, ctx: AppContext) {
   // Core spec tools
   registerInitTool(server, ctx);
@@ -137,4 +144,11 @@ export function registerAllTools(server: McpServer, ctx: AppContext) {
 
   // Inverse Reasoning / Predictions
   registerPredictTool(server, ctx);
+
+  // === v2.2 LOOP ENGINEERING ENGINES ===
+  registerSwarmTool(server, ctx);
+  registerDaemonTool(server, ctx);
+  registerDeployLoopTool(server, ctx);
+  registerOrchestrateTool(server, ctx);
+  registerAmplifyTool(server, ctx);
 }
